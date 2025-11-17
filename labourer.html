@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labour Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg,#e8f5ff 0%, #ffffff 53%, #e2f7ea 100%);
+            min-height: 100vh;
+            /* subtle pattern */
+            background-image: url("https://www.transparenttextures.com/patterns/symphony.png");
+        }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            background: linear-gradient(135deg, #23418a 0%, #368dc0 100%);
+            color: #fff;
+            width: 270px;
+            min-width: 190px;
+            box-shadow: 2px 0 18px #317bbb2a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            position: relative;
+        }
+        .profile-card {
+            width: 93%;
+            margin-bottom: 25px;
+            background: #fff;
+            box-shadow: 0 4px 26px #23507c17;
+            border-radius: 19px;
+            text-align: center;
+            padding: 16px 10px 14px 12px;
+            color: #236397;
+            position: relative;
+            transition: box-shadow .18s;
+        }
+        .profile-card:hover {
+            box-shadow: 0 8px 40px #317bbb33;
+        }
+        .profile-edit-btn {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            color: #3479e3;
+            position: absolute;
+            right: 9px;
+            top: 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 1.12em;
+            padding: 6px 12px;
+            transition: background .18s;
+        }
+        .profile-edit-btn:hover {
+            background: #e3effe;
+        }
+        .profile-avatar {
+            border-radius: 50%;
+            width: 62px; height: 62px;
+            background: #f5faff;
+            box-shadow: 0 2px 12px #89c9fc38;
+            margin: 6px auto 6px auto;
+            object-fit: cover;
+        }
+        .profile-name { font-weight: 600; font-size: 1.18em;}
+        .profile-info { font-size: 0.97em; color: #236397;}
+        .profile-rating { color: #ebce3a; letter-spacing:1px; font-size:1.15em;}
+        .sidebar-menu {
+            width: 89%; margin-top: 16px;
+        }
+        .sidebar-menu button {
+            display: flex; align-items: center;
+            background: none; border: none; outline: none;
+            color: #fff; font-size: 1.05em; font-weight: 500;
+            width: 100%; padding: 13px 15px; margin-bottom: 10px;
+            border-radius: 12px; cursor: pointer;
+            transition: background .22s, color .18s;
+        }
+        .sidebar-menu button.active, .sidebar-menu button:hover {
+            background: linear-gradient(90deg,#fff9fd 0%, #beebff 110%);
+            color: #236397;
+            box-shadow: 0 4px 16px #317bbb24;
+            font-weight: 600;
+        }
+        .sidebar-menu .icon { margin-right: 14px; font-size: 1.22em;}
+        .sidebar-footer {
+            margin-top: auto; margin-bottom: 26px;
+            width: 90%; text-align: center;
+        }
+        .logout-btn {
+            background: linear-gradient(90deg,#ef629f 0%, #ffb88c 100%);
+            color: white;
+            border: none; border-radius: 13px;
+            font-size: 1.05em; font-weight: 600;
+            padding: 9px 22px; margin-top: 8px;
+            cursor: pointer; box-shadow: 0 1px 10px #fcbcbf22;
+            transition: background .13s, color .16s;
+        }
+        .logout-btn:hover {
+            background: linear-gradient(90deg,#ffb88c 0%, #ef629f 100%);
+            color:#fff;
+        }
+        .content {
+            flex: 1;
+            background: linear-gradient(135deg,#f7fcfd 0%, #e2f7ea 70%);
+            padding: 28px 34px 28px 34px;
+            overflow-y: auto;
+            min-height: 740px;
+        }
+        .section {
+            display: none;
+            animation: fadein .42s;
+        }
+        @keyframes fadein {
+            0% { opacity:0; transform: translateY(8px);}
+            100% { opacity:1; transform: translateY(0);}
+        }
+        .section.active { display: block; }
+        h2 {
+            font-weight: 700;
+            color: #236397;
+            background: linear-gradient(85deg,#e3f1fe 22%,#e1f6fd 80%);
+            padding: 7px 24px;
+            border-radius: 9px;
+            display: inline-block;
+            margin-bottom: 24px;
+            font-size: 1.28em;
+            box-shadow: 0 2px 10px #a6d9ff14;
+        }
+        /* Job Cards */
+        .job-listing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 33px;
+            margin-bottom: 32px;
+        }
+        .job-card {
+            background: linear-gradient(120deg,#f5fdff 60%, #cafae9 100%);
+            border-radius: 18px;
+            box-shadow: 0 3px 18px #2261b13a;
+            padding: 27px 23px 19px 23px;
+            transition: box-shadow .15s, background .14s;
+            position: relative;
+        }
+        .job-card:before {
+            content:"";
+            display:block;
+            position:absolute;
+            left:0; right:0; top:0; height:7px;
+            border-top-left-radius:18px;
+            border-top-right-radius:18px;
+            background: linear-gradient(90deg,#5da1f5 0%, #43a057 120%);
+            opacity:0.11;
+        }
+        .job-card:hover {
+            box-shadow: 0 7px 38px #2261b16a;
+            background: linear-gradient(120deg,#cdedfc 40%,#cafae9 100%);
+        }
+        .job-title { font-weight: 600; font-size: 1.18em; color: #236397; margin-bottom: 6px;}
+        .job-desc { color: #41a064; font-size: 1.02em; margin-bottom: 10px;}
+        .job-meta { color: #218168; font-size: 0.99em; margin-bottom:6px;}
+        .job-actions button {
+            margin-right: 8px; padding: 9px 23px;
+            border-radius: 8px; border: none;
+            font-size: 1.07em; cursor: pointer; font-weight:600;
+            transition:background .18s;
+        }
+        .accept-btn { background: linear-gradient(90deg,#5da1f5 0%, #43a057 100%); color: #fff;}
+        .accept-btn:hover { background: linear-gradient(90deg,#43a057 0%, #5da1f5 100%);}
+        .decline-btn { background: linear-gradient(90deg,#f5576c 0%, #ffb88c 100%); color: #fff;}
+        .decline-btn:hover { background: linear-gradient(90deg,#ffb88c 0%, #f5576c 100%);}
+        /* History */
+        .history-table {
+            width: 97%; background: #fff;
+            border-radius: 17px; box-shadow: 0 2px 13px #5da1f517;
+            margin-bottom: 32px; padding: 13px 0;
+            border-collapse: separate; border-spacing:0;
+            overflow: hidden;
+        }
+        .history-table th, .history-table td {
+            padding: 15px 16px; text-align: left;
+        }
+        .history-table th { background: #eaf6ff; color: #2476b6;}
+        .history-table tr:not(:last-child) { border-bottom: 1px solid #f2f5fa;}
+        .status-pending { color: #5da1f5; font-weight: 700;}
+        .status-completed { color: #43a057; font-weight: 700;}
+        /* Wage / Payment */
+        .summary-card {
+            background: linear-gradient(105deg, #f8fdff 60%, #d3faea 100%);
+            border-radius: 18px;
+            box-shadow: 0 2px 14px #5da1f517;
+            padding: 26px 24px 17px 24px;
+            margin-bottom: 32px;
+            max-width: 436px;
+        }
+        .summary-card-title { font-size: 1.18em; color: #236397; font-weight: 600; margin-bottom: 9px; }
+        .summary-card-item { color: #237a48; font-size: 1.09em; margin-bottom: 10px;}
+        /* Notifications */
+        .notif-card {
+            background: linear-gradient(105deg,#eaf6ff 60%, #d3faea 100%);
+            border-radius: 12px;
+            box-shadow: 0 2px 13px #5da1f518;
+            padding: 19px 15px; margin-bottom: 21px;
+            color: #236397; font-weight: 600; font-size:1.04em
+        }
+        .feedback-card {
+            background: linear-gradient(105deg,#eaf6ff 60%, #d3faea 100%);
+            border-radius: 12px;
+            box-shadow: 0 2px 13px #5da1f518;
+            padding: 21px 19px; margin-bottom: 21px;
+            color: #236397; font-size: 1.06em;
+        }
+        @media (max-width:900px){
+            .job-listing-cards{ grid-template-columns: 1fr;}
+            .sidebar{min-width: 10vw;}
+        }
+        /* Profile Modal */
+        .profile-modal-bg {
+            display:none; position:fixed; left:0;top:0;width:100vw;height:100vh;z-index:99;
+            background: rgba(45,119,200,0.13);
+            backdrop-filter: blur(2px);
+        }
+        .profile-modal {
+            position:absolute; left:50%;top:50%;transform:translate(-50%,-50%);
+            background: #fff;
+            border-radius:18px;
+            box-shadow:0 6px 48px #368dc086;
+            padding:28px 29px; min-width:320px;max-width:97vw;
+        }
+        .profile-modal h3 {
+            margin-top:0;margin-bottom:12px;font-weight:700;
+            color:#236397;font-size:1.16em;
+        }
+        .profile-modal label {display:block;margin-top:10px;margin-bottom: 4px; color:#218168;font-size:1.03em;}
+        .profile-modal input {padding:9px 10px;font-size:1em;width:100%;margin-bottom:9px;border-radius:7px;border:1.7px solid #97dbf1;}
+        .profile-modal .avatar-preview { width:76px;height:76px;border-radius:50%;object-fit:cover;box-shadow:0 2px 12px #89c9fc38;background:#fffde8;margin-bottom:9px;}
+        .profile-modal .modal-btn-row {margin-top:20px;text-align:right;}
+        .profile-modal button {padding:8px 18px;border:none;border-radius:7px;font-size:1.1em;cursor:pointer; margin-left:8px;}
+        .profile-modal .btn-save {background: linear-gradient(90deg,#43a057 0%, #5da1f5 100%);color:#fff}
+        .profile-modal .btn-cancel {background: #eee; color:#236397;}
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="profile-card" id="profileCard">
+                <img class="profile-avatar" id="profileAvatar" src="https://ui-avatars.com/api/?name=LA&background=2980b9&color=d5e7fc&size=128" alt="Profile">
+                <button class="profile-edit-btn" onclick="openProfileModal()" title="Edit profile">&#9998;</button>
+                <div class="profile-name" id="profileName">Vikram</div>
+                <div class="profile-rating" id="profileRating">★★★★☆</div>
+                <div class="profile-info" id="profileContact">+91 87654XXXX</div>
+            </div>
+            <div class="sidebar-menu">
+                <button class="active" onclick="showSection('jobs')" id="sidebar-jobs">
+                    <span class="icon">🌾</span> Available Jobs
+                </button>
+                <button onclick="showSection('history')" id="sidebar-history">
+                    <span class="icon">📜</span> Job History
+                </button>
+                <button onclick="showSection('wage')" id="sidebar-wage">
+                    <span class="icon">💳</span> Wage Summary
+                </button>
+                <button onclick="showSection('notifications')" id="sidebar-notifications">
+                    <span class="icon">🔔</span> Notifications
+                </button>
+                <button onclick="showSection('feedback')" id="sidebar-feedback">
+                    <span class="icon">⭐</span> Feedback & Ratings
+                </button>
+            </div>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+        <main class="content">
+            <!-- Available Jobs -->
+            <div id="jobs" class="section active">
+                <h2>Available Farm Jobs</h2>
+                <div class="job-listing-cards" id="jobCards"></div>
+            </div>
+            <!-- Job History -->
+            <div id="history" class="section">
+                <h2>Job History</h2>
+                <table class="history-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Job Name</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Wage</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- Wage Summary -->
+            <div id="wage" class="section">
+                <h2>Payment / Wage Summary</h2>
+                <div class="summary-card">
+                    <div class="summary-card-title">Summary</div>
+                    <div class="summary-card-item">Total Earned: ₹<span id="wageTotal">0</span></div>
+                    <div class="summary-card-item">Pending Payments: ₹<span id="wagePending">0</span></div>
+                    <div class="summary-card-item">Jobs Completed: <span id="wageJobs">0</span></div>
+                </div>
+            </div>
+            <!-- Notifications -->
+            <div id="notifications" class="section">
+                <h2>Notifications</h2>
+                <div id="notifCards"></div>
+            </div>
+            <!-- Feedback & Ratings -->
+            <div id="feedback" class="section">
+                <h2>Feedback & Ratings</h2>
+                <div id="feedbackCards"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Editable Profile Modal -->
+    <div class="profile-modal-bg" id="profileModalBg">
+        <div class="profile-modal">
+            <h3>Edit Profile</h3>
+            <center>
+                <img id="modalAvatarPreview" class="avatar-preview" src="" alt="Avatar Preview">
+                <input type="file" id="avatarUpload" accept="image/*" style="margin-top:-1px;">
+            </center>
+            <label for="modalName">Name</label>
+            <input type="text" id="modalName">
+            <label for="modalContact">Mobile</label>
+            <input type="text" id="modalContact" maxlength="16">
+            <div class="modal-btn-row">
+                <button class="btn-save" onclick="saveProfile()">Save</button>
+                <button class="btn-cancel" onclick="closeProfileModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section switching & highlighting
+        function showSection(sec) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sec).classList.add('active');
+            document.querySelectorAll('.sidebar-menu button').forEach(b=>b.classList.remove('active'));
+            document.getElementById('sidebar-'+sec).classList.add('active');
+        }
+
+        function logout() { window.location.href = "index.html"; }
+
+        // ========= Editable Profile functionality =========
+        // Load or set profile data
+        function loadProfile() {
+            let name = localStorage.getItem('labourName') || 'Vikram';
+            let contact = localStorage.getItem('labourPhone') || '+91 87654XXXX';
+            let avatar = localStorage.getItem('labourAvatar') || "https://ui-avatars.com/api/?name=LA&background=2980b9&color=d5e7fc&size=128";
+            document.getElementById('profileName').innerText = name;
+            document.getElementById('profileContact').innerText = contact;
+            document.getElementById('profileAvatar').src = avatar;
+            document.getElementById('modalName').value = name;
+            document.getElementById('modalContact').value = contact;
+            document.getElementById('modalAvatarPreview').src = avatar;
+        }
+        loadProfile();
+
+        function openProfileModal() {
+            loadProfile();
+            document.getElementById('profileModalBg').style.display = "block";
+        }
+        function closeProfileModal() {
+            document.getElementById('profileModalBg').style.display = "none";
+        }
+        document.getElementById('avatarUpload').addEventListener('change', function(e){
+            const file = this.files[0];
+            if(file){
+                const reader = new FileReader();
+                reader.onload = function(evt){
+                    document.getElementById('modalAvatarPreview').src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        function saveProfile() {
+            localStorage.setItem('labourName', document.getElementById('modalName').value);
+            localStorage.setItem('labourPhone', document.getElementById('modalContact').value);
+            let newAvatar = document.getElementById('modalAvatarPreview').src;
+            localStorage.setItem('labourAvatar', newAvatar);
+            closeProfileModal();
+            loadProfile();
+        }
+
+        // ===== Jobs Listing (Demo data) =====
+        let farmJobs = [
+            {id:1, name:"Harvesting", desc:"Help harvest wheat crop", wage:"700", location:"Kadugodi", date:"Oct 27", status:"available"},
+            {id:2, name:"Weeding", desc:"Remove weeds in 2 acres", wage:"600", location:"Whitefield", date:"Oct 28", status:"available"},
+            {id:3, name:"Planting", desc:"Plant rice saplings", wage:"750", location:"Varthur", date:"Oct 30", status:"available"}
+        ];
+        function renderJobs() {
+            document.getElementById('jobCards').innerHTML = farmJobs.length === 0
+                ? '<div>No farm jobs available now.</div>'
+                : farmJobs.map(j => `
+                <div class="job-card">
+                    <div class="job-title">${j.name}</div>
+                    <div class="job-desc">${j.desc}</div>
+                    <div class="job-meta">Location: ${j.location} | Date: ${j.date}</div>
+                    <div class="job-meta">Wage: ₹${j.wage}</div>
+                    <div class="job-actions">
+                        <button class="accept-btn" onclick="acceptJob(${j.id})">Accept</button>
+                        <button class="decline-btn" onclick="declineJob(${j.id})">Decline</button>
+                    </div>
+                </div>
+              `).join('');
+        }
+        function acceptJob(id){
+            const i=farmJobs.findIndex(j=>j.id===id); if(i<0)return;
+            farmJobs[i].status='pending';
+            jobHistory.push({...farmJobs[i],status:'pending',completed:false,date:'Oct 2025',wage:farmJobs[i].wage});
+            renderJobs(); renderHistory();
+            alert('Job accepted!');
+        }
+        function declineJob(id){
+            const i=farmJobs.findIndex(j=>j.id===id); if(i<0)return;
+            farmJobs.splice(i,1); renderJobs();
+        }
+        // ===== Job History =====
+        let jobHistory = [
+            {name:"Harvesting",date:"Oct 15, 2025",status:"completed",wage:"700"},
+            {name:"Weeding",date:"Oct 20, 2025",status:"pending",wage:"600"}
+        ];
+        function renderHistory() {
+            let html = jobHistory.length == 0 ? '<tr><td colspan="4">No job history.</td></tr>' :
+            jobHistory.map(j =>
+                `<tr>
+                    <td>${j.name}</td>
+                    <td>${j.date}</td>
+                    <td class="${j.status=='completed'?'status-completed':'status-pending'}">${j.status}</td>
+                    <td>₹${j.wage}</td>
+                </tr>`
+            ).join('');
+            document.querySelector('#historyTable tbody').innerHTML = html;
+        }
+        // ===== Wage summary =====
+        function renderWageSummary(){
+            let total=0, pending=0, jobs=jobHistory.length;
+            jobHistory.forEach(j=>{
+                total += parseInt(j.wage)||0;
+                if(j.status==='pending') pending += parseInt(j.wage)||0;
+            });
+            document.getElementById('wageTotal').innerText = total;
+            document.getElementById('wagePending').innerText = pending;
+            document.getElementById('wageJobs').innerText = jobs;
+        }
+        // ===== Notifications =====
+        let notifs = [
+            {id:1, msg:"New farm job available (Harvesting)"},
+            {id:2, msg:"Farmer Priya marked job as completed."}
+        ];
+        function renderNotifs(){
+            document.getElementById('notifCards').innerHTML = notifs.length===0
+                ? '<div>No notifications.</div>'
+                : notifs.map(n=>`<div class="notif-card">${n.msg}</div>`).join('');
+        }
+        // ===== Feedback =====
+        let feedbacks = [
+            {id:1, msg:"Work was perfect, thank you!", rating:5, from:"Farmer Priya"},
+            {id:2, msg:"Arrived late, but good work.", rating:4, from:"Farmer Raj"}
+        ];
+        function renderFeedback(){
+            document.getElementById('feedbackCards').innerHTML = feedbacks.length===0
+                ? '<div>No feedback / ratings yet.</div>'
+                : feedbacks.map(f=>`<div class="feedback-card">"${f.msg}"<br><b>Rating:</b> ${'★'.repeat(f.rating)}<br><small>by ${f.from}</small></div>`).join('');
+        }
+        // Initial rendering
+        renderJobs(); renderHistory(); renderWageSummary(); renderNotifs(); renderFeedback();
+    </script>
+</body>
+</html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Krushi Sathi</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #0f766e;
+            --secondary-green: #06b6d4;
+            --light-green: #e6fffa;
+            --lighter-green: #f8fafc;
+            --accent-orange: #fb923c;
+            --accent-blue: #3b82f6;
+            --btn-gradient-start: #06b6d4;
+            --btn-gradient-end: #3b82f6;
+            --dark-text: #0f172a;
+            --light-text: #475569;
+            --white: #ffffff;
+            --shadow: 0 6px 30px rgba(15, 23, 42, 0.12);
+            --transition: all 0.28s cubic-bezier(.2,.9,.2,1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: var(--lighter-green);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--btn-gradient-start), var(--btn-gradient-end));
+            color: var(--white);
+            box-shadow: 0 8px 24px rgba(59,130,246,0.12);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 36px rgba(59,130,246,0.14);
+            filter: brightness(1.02);
+        }
+        
+        /* Header Styles */
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-text {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        
+        /* Animated Background */
+        .bg-visuals {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-visuals .grad {
+            position: absolute;
+            inset: -20% -10% -20% -10%;
+            background: linear-gradient(120deg, rgba(6,182,212,0.12), rgba(59,130,246,0.08) 35%, rgba(15,118,110,0.10));
+            filter: blur(18px) saturate(135%);
+            transform: rotate(-6deg) translateZ(0);
+            animation: slowShift 12s ease-in-out infinite;
+            opacity: 1;
+        }
+
+        .bg-visuals .orb { 
+            position: absolute; 
+            border-radius: 50%; 
+            filter: blur(8px); 
+            opacity: 0.34; 
+        }
+        
+        .bg-visuals .orb.o1 { 
+            width: 480px; 
+            height: 480px; 
+            background: radial-gradient(circle at 30% 30%, rgba(6,182,212,0.42), rgba(6,182,212,0.06)); 
+            left: -10%; 
+            top: 6%; 
+            animation: orbFloat 18s linear infinite; 
+        }
+        
+        .bg-visuals .orb.o2 { 
+            width: 360px; 
+            height: 360px; 
+            background: radial-gradient(circle at 70% 30%, rgba(59,130,246,0.36), rgba(59,130,246,0.06)); 
+            right: -8%; 
+            top: 26%; 
+            animation: orbFloat 22s linear infinite reverse; 
+        }
+        
+        .bg-visuals .orb.o3 { 
+            width: 260px; 
+            height: 260px; 
+            background: radial-gradient(circle at 50% 50%, rgba(127,211,198,0.28), rgba(127,211,198,0.04)); 
+            left: 8%; 
+            bottom: -8%; 
+            animation: orbFloat 20s linear infinite; 
+        }
+
+        @keyframes slowShift { 
+            0% { transform: translateX(-2%) rotate(-6deg); } 
+            50% { transform: translateX(2%) rotate(-6deg); } 
+            100% { transform: translateX(-2%) rotate(-6deg); } 
+        }
+        
+        @keyframes orbFloat { 
+            0% { transform: translateY(0) scale(1); } 
+            50% { transform: translateY(-28px) scale(1.03); } 
+            100% { transform: translateY(0) scale(1); } 
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bg-visuals .grad, .bg-visuals .orb { 
+                animation: none !important; 
+                filter: none; 
+            }
+        }
+        
+        /* Login Section */
+        .login-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+        }
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 550px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,255,255,0.96));
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(6,24,24,0.12);
+            position: relative;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(rgba(6,70,64,0.68), rgba(6,70,64,0.68)), 
+                        url('https://images.unsplash.com/photo-1625246335525-6215c0345729?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-left h2 {
+            color: var(--white);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .login-left p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .login-features {
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .login-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .login-features i {
+            color: var(--secondary-green);
+            background: var(--white);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h2 {
+            font-size: 2rem;
+            color: var(--primary-green);
+        }
+        
+        .form-header p {
+            color: var(--light-text);
+            margin-top: 8px;
+        }
+        
+        .form-toggle {
+            display: flex;
+            background: var(--lighter-green);
+            border-radius: 50px;
+            margin-bottom: 30px;
+            padding: 5px;
+        }
+        
+        .form-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .form-toggle-btn.active {
+            background: var(--secondary-green);
+            color: var(--white);
+        }
+        
+        .form-toggle-btn:hover:not(.active) {
+            background: rgba(6,182,212,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-green);
+            outline: none;
+            box-shadow: 0 6px 30px rgba(6,182,212,0.08), 0 0 0 6px rgba(6,182,212,0.06);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-text);
+        }
+        
+        .input-with-icon .form-control {
+            padding-left: 45px;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password {
+            color: var(--btn-gradient-start);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, var(--btn-gradient-start), var(--btn-gradient-end));
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 24px rgba(59,130,246,0.10);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.03);
+            box-shadow: 0 12px 32px rgba(59,130,246,0.15);
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--light-text);
+        }
+        
+        .signup-link a {
+            color: var(--secondary-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        footer {
+            margin-top: auto;
+        }
+
+        .footer-wave svg { display:block; width:100%; height:64px; }
+
+        .site-footer { background: linear-gradient(180deg, rgba(6,70,64,0.96), rgba(6,70,64,0.96)); color: var(--white); }
+        .footer-inner { display:flex; gap:32px; padding:40px 20px; align-items:flex-start; }
+        .footer-col { flex:1; }
+        .footer-brand h3 { font-size:1.5rem; margin-bottom:8px; color:var(--white); }
+        .muted { color: rgba(255,255,255,0.85); }
+        .socials { margin-top:14px; display:flex; gap:10px; }
+        .social { display:inline-flex; width:36px; height:36px; align-items:center; justify-content:center; border-radius:8px; background: rgba(255,255,255,0.06); color:var(--white); transition:var(--transition); }
+        .social:hover { transform:translateY(-3px); background: rgba(255,255,255,0.10); }
+
+        .footer-links h4, .footer-newsletter h4 { color: rgba(255,255,255,0.95); margin-bottom:10px; }
+        .footer-links ul { list-style:none; padding:0; margin:0; }
+        .footer-links li { margin-bottom:8px; }
+        .footer-links a { color: rgba(255,255,255,0.9); text-decoration:none; }
+        .footer-links a:hover { text-decoration:underline; }
+
+        .footer-bottom { padding: 18px 20px; border-top: 1px solid rgba(255,255,255,0.06); text-align:center; font-size:0.95rem; color: rgba(255,255,255,0.85); }
+
+        @media (max-width: 900px) {
+            .footer-inner { flex-direction:column; gap:20px; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 600px;
+            }
+            
+            .login-left {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .form-toggle-btn {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-right {
+                padding: 25px;
+            }
+            
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Inline error styling & small animations */
+        .field-error {
+            margin-top: 8px;
+            color: #c53030; /* red-600 */
+            font-size: 0.9rem;
+            min-height: 1.1em;
+            opacity: 0.95;
+        }
+
+        .reveal {
+            animation: revealUp .28s cubic-bezier(.2,.9,.2,1);
+        }
+
+        @keyframes revealUp {
+            from { transform: translateY(6px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Submit button spinner */
+        .submit-btn { position: relative; overflow: hidden; }
+        .btn-spinner {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            width: 18px;
+            height: 18px;
+            margin-top: -9px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.22);
+            border-top-color: rgba(255,255,255,0.95);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity .18s ease, transform .18s ease;
+        }
+        .btn-spinner.active { opacity: 1; transform: scale(1); }
+        .submit-btn.success { background: linear-gradient(90deg,#10b981,#06b6d4); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal, .btn-spinner, .submit-btn { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-visuals" aria-hidden="true">
+        <div class="grad"></div>
+        <div class="orb o1"></div>
+        <div class="orb o2"></div>
+        <div class="orb o3"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-seedling" style="color: #4CAF50; font-size: 28px; margin-right: 10px;"></i>
+                <span class="logo-text">Krushi Sathi</span>
+            </div>
+            
+            <div class="auth-buttons">
+                <!-- sign-up removed as requested -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="login-container">
+            <div class="login-left">
+                <h2>Welcome to Krushi Sathi</h2>
+                <p>Login to access your personalized farming dashboard and continue your journey towards smarter agriculture.</p>
+                
+                <ul class="login-features">
+                    <li><i class="fas fa-check"></i> Access weather intelligence</li>
+                    <li><i class="fas fa-check"></i> Get crop guidance</li>
+                    <li><i class="fas fa-check"></i> Manage equipment rentals</li>
+                    <li><i class="fas fa-check"></i> View market insights</li>
+                </ul>
+            </div>
+            
+            <div class="login-right">
+                <div class="form-header">
+                    <h2 id="welcomeTitle">Welcome!</h2>
+                    <p id="welcomeSubtitle">Select your role to continue</p>
+                </div>
+                
+                <div class="form-toggle roles">
+                    <div class="form-toggle-btn role active" data-role="farmer">Farmer</div>
+                    <div class="form-toggle-btn role" data-role="seller">Seller</div>
+                    <div class="form-toggle-btn role" data-role="labourer">Labourer</div>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required aria-required="true" aria-describedby="phoneError">
+                        </div>
+                        <div id="phoneError" class="field-error" aria-live="polite"></div>
+                    </div>
+                    
+                    <!-- Seller-specific input -->
+                    <div class="form-group" id="sellerInfo" style="display:none;">
+                        <label for="shop">Shop / Business Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-store"></i>
+                            <input type="text" class="form-control" id="shop" placeholder="Enter your shop or business name" aria-describedby="shopError">
+                        </div>
+                        <div id="shopError" class="field-error" aria-live="polite"></div>
+                    </div>
+
+                    <!-- Labourer-specific input -->
+                    <div class="form-group" id="labourerInfo" style="display:none;">
+                        <label for="skill">Location</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-hammer"></i>
+                            <input type="text" class="form-control" id="skill" placeholder="Enter primary location" aria-describedby="skillError">
+                        </div>
+                        <div id="skillError" class="field-error" aria-live="polite"></div>
+                    </div>
+                    
+                    <!-- OTP flow replaces password -->
+                    <div class="form-group otp-row">
+                        <label for="phone">One-time passcode (OTP)</label>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <div style="flex:1; position:relative;">
+                                <div class="input-with-icon">
+                                    <i class="fas fa-key"></i>
+                                    <input type="text" class="form-control" id="otp" placeholder="Enter OTP" inputmode="numeric" aria-describedby="otpError" style="padding-left:45px;">
+                                </div>
+                                <div id="otpError" class="field-error" aria-live="polite"></div>
+                            </div>
+                            <div style="min-width:130px;display:flex;flex-direction:column;gap:6px;">
+                                <button type="button" class="btn btn-primary" id="sendOtpBtn">Send OTP</button>
+                                <button type="button" class="btn" id="resendOtpBtn" style="display:none;">Resend</button>
+                                <div id="otpCountdown" style="font-size:0.9rem;color:var(--light-text);text-align:center;display:none;">01:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <!-- Forgot Password removed -->
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="btn-label">Login to Account</span>
+                        <span class="btn-spinner" aria-hidden="true"></span>
+                    </button>
+                    <div id="devStatus" aria-live="polite" style="margin-top:12px;color:rgba(6,70,64,0.9);font-size:0.95rem;"></div>
+                </form>
+                
+                <!-- signup link intentionally removed -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer" aria-labelledby="footerTitle">
+        <!-- wave divider -->
+        <div class="footer-wave" aria-hidden="true">
+            <svg viewBox="0 0 1200 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,30 C150,80 350,0 600,30 C850,60 1050,10 1200,40 L1200,100 L0,100 Z" fill="url(#g)" />
+                <defs>
+                    <linearGradient id="g" x1="0%" x2="100%">
+                        <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.08" />
+                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.06" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="footer-inner container">
+            <div class="footer-col footer-brand">
+                <h3 id="footerTitle">Krushi Sathi</h3>
+                <p class="muted">Helping farmers, sellers and labourers grow with data-driven tools and trusted services.</p>
+                <div class="socials" aria-label="Social links">
+                    <a href="#" class="social" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col footer-links" aria-label="Helpful links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="#">How it works</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-newsletter" aria-label="Stay up to date">
+                <h4>Stay updated</h4>
+                <p class="muted">Get tips, market alerts and newsletter in your phone.</p>
+                <form class="small-form" onsubmit="event.preventDefault(); alert('Thanks — this is a demo');">
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input type="tel" placeholder="Phone for updates" class="form-control" style="flex:1;padding:10px;border-radius:8px;" aria-label="Phone for updates">
+                        <button class="btn btn-primary" style="padding:10px 14px;border-radius:8px;">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 Krushi Sathi. All rights reserved. | Designed for Farmers, By Agriculture Experts</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Role Selector
+        const roleButtons = document.querySelectorAll('.form-toggle.roles .role');
+        const loginForm = document.getElementById('loginForm');
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const welcomeSubtitle = document.getElementById('welcomeSubtitle');
+        const sellerInfo = document.getElementById('sellerInfo');
+        const labourerInfo = document.getElementById('labourerInfo');
+        const shopInput = document.getElementById('shop');
+        const skillInput = document.getElementById('skill');
+    const phoneInput = document.getElementById('phone');
+    const submitBtn = document.getElementById('submitBtn');
+        const btnLabel = submitBtn.querySelector('.btn-label');
+        const btnSpinner = submitBtn.querySelector('.btn-spinner');
+    const otpInput = document.getElementById('otp');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const resendOtpBtn = document.getElementById('resendOtpBtn');
+    const otpCountdown = document.getElementById('otpCountdown');
+        
+        let selectedRole = 'farmer';
+
+        roleButtons.forEach(btn => btn.addEventListener('click', function() {
+            roleButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedRole = this.getAttribute('data-role');
+            
+            const roleText = this.textContent;
+            welcomeTitle.textContent = `Welcome ${roleText}!`;
+            welcomeSubtitle.textContent = `Sign in as a ${roleText.toLowerCase()} to continue`;
+            
+            // Show/hide role-specific fields and set aria-required
+            if (selectedRole === 'seller') {
+                sellerInfo.style.display = 'block';
+                labourerInfo.style.display = 'none';
+                shopInput.setAttribute('required', '');
+                shopInput.setAttribute('aria-required','true');
+                skillInput.removeAttribute('required');
+                skillInput.removeAttribute('aria-required');
+                sellerInfo.classList.add('reveal');
+                labourerInfo.classList.remove('reveal');
+                // keep shop input as is (user may have entered it)
+            } else if (selectedRole === 'labourer') {
+                sellerInfo.style.display = 'none';
+                labourerInfo.style.display = 'block';
+                skillInput.setAttribute('required', '');
+                skillInput.setAttribute('aria-required','true');
+                shopInput.removeAttribute('required');
+                shopInput.removeAttribute('aria-required');
+                labourerInfo.classList.add('reveal');
+                sellerInfo.classList.remove('reveal');
+                // clear seller input when switching to labourer to avoid accidental redirects
+                if (shopInput) { shopInput.value = ''; shopInput.removeAttribute('aria-invalid'); }
+            } else {
+                sellerInfo.style.display = 'none';
+                labourerInfo.style.display = 'none';
+                shopInput.removeAttribute('required');
+                shopInput.removeAttribute('aria-required');
+                skillInput.removeAttribute('required');
+                skillInput.removeAttribute('aria-required');
+                sellerInfo.classList.remove('reveal');
+                labourerInfo.classList.remove('reveal');
+                // clear both role-specific inputs when returning to farmer
+                if (shopInput) { shopInput.value = ''; shopInput.removeAttribute('aria-invalid'); }
+                if (skillInput) { skillInput.value = ''; skillInput.removeAttribute('aria-invalid'); }
+            }
+        }));
+
+        // small helpers for showing/hiding field errors
+        function showFieldError(el, message) {
+            const id = el.getAttribute('aria-describedby');
+            if (id) {
+                const container = document.getElementById(id);
+                container.textContent = message || '';
+                if (message) {
+                    el.setAttribute('aria-invalid', 'true');
+                } else {
+                    el.removeAttribute('aria-invalid');
+                }
+            } else if (message) {
+                alert(message); // fallback
+            }
+        }
+
+        function clearAllFieldErrors() {
+            ['phoneError','shopError','skillError','otpError'].forEach(i => {
+                const n = document.getElementById(i);
+                if (n) n.textContent = '';
+            });
+            if (phoneInput) phoneInput.removeAttribute('aria-invalid');
+            if (shopInput) shopInput.removeAttribute('aria-invalid');
+            if (skillInput) skillInput.removeAttribute('aria-invalid');
+            if (typeof otpInput !== 'undefined' && otpInput) otpInput.removeAttribute('aria-invalid');
+        }
+
+        // Phone validation helpers
+        function normalizePhone(input) { 
+            return input.replace(/[^0-9+]/g, ''); 
+        }
+        
+        function isValidPhone(number) {
+            const n = normalizePhone(number);
+            if (n.startsWith('+')) return /^\+[0-9]{8,15}$/.test(n);
+            return /^[0-9]{10}$/.test(n);
+        }
+
+        // OTP management
+        let otpTimer = null;
+        let otpTtl = 60; // seconds
+        let lastOtp = null; // store a mock OTP for demo
+
+        function startOtpCountdown(seconds) {
+            clearInterval(otpTimer);
+            let remaining = seconds;
+            otpCountdown.style.display = 'block';
+            resendOtpBtn.style.display = 'none';
+            otpCountdown.textContent = formatTime(remaining);
+            otpTimer = setInterval(() => {
+                remaining -= 1;
+                otpCountdown.textContent = formatTime(remaining);
+                if (remaining <= 0) {
+                    clearInterval(otpTimer);
+                    otpCountdown.style.display = 'none';
+                    resendOtpBtn.style.display = 'inline-block';
+                }
+            }, 1000);
+        }
+
+        function formatTime(s) {
+            const mm = String(Math.floor(s/60)).padStart(2,'0');
+            const ss = String(s%60).padStart(2,'0');
+            return `${mm}:${ss}`;
+        }
+
+        function mockSendOtp() {
+            // Generate a 4-digit mock OTP and "send"
+            lastOtp = String(Math.floor(1000 + Math.random()*9000));
+            console.log('Mock OTP sent:', lastOtp);
+            const ds = document.getElementById('devStatus'); if (ds) ds.textContent = `Mock OTP: ${lastOtp}`;
+        }
+
+        sendOtpBtn.addEventListener('click', function() {
+            clearAllFieldErrors();
+            const phone = phoneInput.value.trim();
+            if (!phone) { showFieldError(phoneInput, 'Enter your phone to receive OTP'); phoneInput.focus(); return; }
+            if (!isValidPhone(phone)) { showFieldError(phoneInput, 'Enter a valid phone number first'); phoneInput.focus(); return; }
+            // mock send
+            mockSendOtp();
+            startOtpCountdown(otpTtl);
+            sendOtpBtn.textContent = 'Sent';
+            sendOtpBtn.setAttribute('disabled','');
+            resendOtpBtn.style.display = 'none';
+            otpInput.focus();
+        });
+
+        resendOtpBtn.addEventListener('click', function() {
+            mockSendOtp();
+            startOtpCountdown(otpTtl);
+            resendOtpBtn.style.display = 'none';
+            sendOtpBtn.textContent = 'Sent';
+        });
+
+        // remove password-related references (if any) and use OTP in validation
+        // Form submission (with inline errors and animated submit)
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            try {
+                console.log('submit handler start');
+                clearAllFieldErrors();
+
+            const phone = phoneInput.value.trim();
+            const otp = otpInput ? otpInput.value.trim() : '';
+
+            let hasError = false;
+
+            if (!phone) { showFieldError(phoneInput, 'Phone number is required'); hasError = true; }
+            else if (!isValidPhone(phone)) { showFieldError(phoneInput, 'Enter a valid phone (10-digit or +country)'); hasError = true; }
+
+            // Validate OTP instead of password
+            if (!otp) { showFieldError(otpInput, 'Enter the OTP sent to your phone'); hasError = true; }
+            else if (!/^[0-9]{4,6}$/.test(otp)) { showFieldError(otpInput, 'OTP should be 4-6 digits'); hasError = true; }
+
+            if (selectedRole === 'seller') {
+                const shop = shopInput.value.trim();
+                if (!shop) { showFieldError(shopInput, 'Shop / business name is required'); hasError = true; }
+                else if (shop.length < 3) { showFieldError(shopInput, 'Minimum 3 characters required'); hasError = true; }
+            }
+
+            if (selectedRole === 'labourer') {
+                const skill = skillInput.value.trim();
+                if (!skill) { showFieldError(skillInput, 'Location is required'); hasError = true; }
+                else if (skill.length < 3) { showFieldError(skillInput, 'Minimum 3 characters required'); hasError = true; }
+            }
+
+            if (hasError) {
+                // focus first invalid
+                const firstInvalid = document.querySelector('[aria-invalid="true"]');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Verify OTP (demo-mode: compare to lastOtp)
+            if (lastOtp && otp !== lastOtp) {
+                showFieldError(otpInput, 'Incorrect OTP');
+                otpInput.focus();
+                return;
+            }
+
+            // Animate submit button: show spinner -> success
+            btnLabel.style.opacity = '0';
+            btnSpinner.classList.add('active');
+            submitBtn.setAttribute('disabled','');
+
+            // simulate network delay
+            setTimeout(() => {
+                btnSpinner.classList.remove('active');
+                btnLabel.textContent = 'Success ✓';
+                submitBtn.classList.add('success');
+
+                setTimeout(() => {
+                    // Redirect based on the selected role (primary source of truth)
+                    let target;
+                    if (selectedRole === 'seller') target = 'seller.html';
+                    else if (selectedRole === 'labourer') target = 'labourer.html';
+                    else target = 'farmer.html';
+                    console.log('redirecting', { selectedRole, target });
+                    const ds = document.getElementById('devStatus'); if (ds) ds.textContent = `Redirecting to ${target}`;
+                    // final redirect
+                    setTimeout(() => window.location.href = target, 260);
+                }, 700);
+            }, 900);
+            } catch (err) {
+                console.error('Error in submit handler', err);
+                alert('An unexpected error occurred. See console for details.');
+            }
+        });
+
+        // Background parallax + idle motion (respects prefers-reduced-motion)
+        (function() {
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const bg = document.querySelector('.bg-visuals');
+            if (!bg || prefersReduced) return;
+
+            const grad = bg.querySelector('.grad');
+            const orbs = Array.from(bg.querySelectorAll('.orb'));
+
+            let targetX = 0, targetY = 0;
+            let curX = 0, curY = 0;
+            let lastMove = performance.now();
+
+            // pointer -> normalized -1..1
+            function onPointerMove(e) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1..1
+                const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1..1
+                targetX = x; targetY = y;
+                lastMove = performance.now();
+            }
+
+            window.addEventListener('pointermove', onPointerMove, {passive:true});
+
+            function tick(now) {
+                // ease towards target
+                curX += (targetX - curX) * 0.08;
+                curY += (targetY - curY) * 0.08;
+
+                // gradient moves subtly opposite to cursor for depth
+                if (grad) grad.style.transform = `translate(${ -curX * 18 }px, ${ -curY * 10 }px) rotate(-6deg)`;
+
+                // orbs: each orb has its own depth and idle bobbing
+                orbs.forEach((o, i) => {
+                    const depth = 0.25 + (i / Math.max(1, orbs.length)) * 0.9; // 0.25..1.15
+                    const px = curX * (18 * depth);
+                    const py = curY * (12 * depth);
+                    const idle = Math.sin((now/900) + i) * (6 * depth);
+                    const rot = curX * (8 * depth);
+                    o.style.transform = `translate(${px}px, ${py + idle}px) rotate(${rot}deg)`;
+                });
+
+                requestAnimationFrame(tick);
+            }
+
+            requestAnimationFrame(tick);
+        })();
+    </script>
+</body>
+</html>

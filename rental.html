@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Equipment Rentals - Krushi Sathi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{--primary-green:#0f766e;--secondary-green:#06b6d4;--white:#fff;--muted:#6b7280;--card-bg:#ffffff;--shadow:0 10px 30px rgba(15,23,42,0.06)}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system,Segoe UI, Roboto, 'Open Sans', sans-serif;margin:0;background:linear-gradient(180deg,#f8fafc 0%,#ecfeff 100%);min-height:100vh}
+    .container{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    header h1{color:var(--primary-green);font-size:1.4rem;margin:0}
+    .intro{color:var(--muted);font-size:0.95rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .card{background:var(--card-bg);padding:16px;border-radius:12px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+    .card img{width:100%;height:160px;object-fit:cover;border-radius:8px;margin-bottom:12px}
+    .card h3{margin:0 0 6px 0;color:#0f172a}
+    .meta{color:var(--muted);font-size:0.9rem;margin-bottom:8px}
+    .price{font-weight:700;color:var(--primary-green);margin-bottom:8px}
+    .actions{margin-top:auto;display:flex;gap:8px}
+    .btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(90deg,var(--secondary-green),#3b82f6);color:var(--white)}
+    .btn.ghost{background:#f1f5f9;color:#0f172a;border:1px solid #e6eef3}
+    .empty{padding:60px;text-align:center;color:var(--muted);background:var(--card-bg);border-radius:12px;box-shadow:var(--shadow)}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center}
+    .modal{background:var(--card-bg);padding:18px;border-radius:10px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(2,6,23,0.4)}
+    .modal h4{margin:0 0 10px}
+    .modal textarea{width:100%;min-height:110px;padding:10px;border-radius:8px;border:1px solid #e6eef3}
+    .modal .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+    /* background orbs (subtle) */
+    .bg-visuals{position:fixed;inset:0;z-index:-1;pointer-events:none}
+    .bg-visuals .o{position:absolute;border-radius:50%;filter:blur(18px);opacity:0.18}
+    .bg-visuals .o.o1{width:420px;height:420px;left:-6%;top:6%;background:radial-gradient(circle at 30% 30%, rgba(6,182,212,0.6), rgba(6,182,212,0.06))}
+    .bg-visuals .o.o2{width:320px;height:320px;right:-6%;top:20%;background:radial-gradient(circle at 70% 30%, rgba(59,130,246,0.5), rgba(59,130,246,0.04))}
+    @media (prefers-reduced-motion:reduce){.bg-visuals{display:none}}
+  </style>
+</head>
+<body>
+  <div class="bg-visuals" aria-hidden="true"><div class="o o1"></div><div class="o o2"></div></div>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Available Equipment for Rent</h1>
+        <div class="intro">Browse equipment listed by sellers near you. Click Request to contact the seller.</div>
+      </div>
+      <div><a href="farmer.html" class="btn ghost"><i class="fas fa-arrow-left"></i> Back</a></div>
+    </header>
+
+    <main id="listingsArea">
+      <div class="empty">Loading listings…</div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h4 id="modalTitle">Request to Rent</h4>
+      <div id="modalInfo" style="color:var(--muted);margin-bottom:8px"></div>
+      <label for="message">Message to seller (optional)</label>
+      <textarea id="message" placeholder="Hi, I'm interested in renting your equipment..."></textarea>
+      <div class="modal-actions">
+        <button class="btn ghost" id="cancelBtn">Cancel</button>
+        <button class="btn primary" id="sendRequestBtn">Send Request</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Read listings from localStorage and render
+    const listingsArea = document.getElementById('listingsArea');
+    let listings = JSON.parse(localStorage.getItem('equipmentListings') || '[]');
+
+    function render() {
+      if (!listings.length) {
+        listingsArea.innerHTML = '<div class="empty">No equipment listed yet. Ask sellers to add listings or become a seller to list equipment.</div>';
+        return;
+      }
+
+      const html = '<div class="grid">' + listings.map(l => {
+        const img = (l.images && l.images[0] && l.images[0].data) ? l.images[0].data : '';
+        const price = `₹${(l.price||0).toFixed(2)} / ${l.rate||'unit'}`;
+        return `\
+          <article class="card" data-id="${l.id}" aria-labelledby="title-${l.id}">\
+            ${img?`<img src="${img}" alt="${escapeHtml(l.equipmentName||'equipment')}">`:''}\
+            <h3 id="title-${l.id}">${escapeHtml(l.equipmentName||'Untitled')}</h3>\
+            <div class="meta">${escapeHtml(l.location||'Unknown location')}</div>\
+            <div class="price">${price}</div>\
+            <div class="meta">${l.quantity} unit(s) • ${l.availability}</div>\
+            <div class="actions">\
+              <button class="btn primary" data-action="request" data-id="${l.id}">Request</button>\
+              <a class="btn ghost" href="tel:${encodeURIComponent(l.contactPhone||'')}"><i class="fas fa-phone"></i> Call</a>\
+            </div>\
+          </article>\
+        `;
+      }).join('') + '</div>';
+
+      listingsArea.innerHTML = html;
+
+      // attach handlers
+      document.querySelectorAll('[data-action="request"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openRequestModal(btn.dataset.id);
+        });
+      });
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+
+    // Modal logic
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalInfo = document.getElementById('modalInfo');
+    const messageInput = document.getElementById('message');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const sendRequestBtn = document.getElementById('sendRequestBtn');
+    let activeListing = null;
+
+    function openRequestModal(id){
+      activeListing = listings.find(x=>String(x.id)===String(id));
+      if(!activeListing) return;
+      modalInfo.textContent = `${activeListing.equipmentName} — ${activeListing.location} — Contact: ${activeListing.contactName || ''}`;
+      messageInput.value = `Hi ${activeListing.contactName||'there'}, I'm interested in renting ${activeListing.equipmentName}. Please let me know availability.`;
+      backdrop.style.display='flex';
+      backdrop.setAttribute('aria-hidden','false');
+      messageInput.focus();
+    }
+
+    cancelBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
+
+    sendRequestBtn.addEventListener('click', ()=>{
+      // save a rental request to localStorage so seller can accept/decline
+      const msg = messageInput.value.trim();
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const request = {
+        id: Date.now(),
+        listingId: activeListing.id,
+        listingName: activeListing.equipmentName || '',
+        sellerPhone: activeListing.contactPhone || '',
+        sellerName: activeListing.contactName || '',
+        message: msg,
+        fromName: userData.name || userData.fullName || 'Farmer',
+        fromPhone: userData.phone || userData.contactPhone || '',
+        timestamp: new Date().toISOString(),
+        status: 'pending'
+      };
+
+      const requests = JSON.parse(localStorage.getItem('rentalRequests') || '[]');
+      requests.push(request);
+      localStorage.setItem('rentalRequests', JSON.stringify(requests));
+
+      // confirmation (demo) and close modal
+      alert('Request saved. Seller will see it in their dashboard.');
+      backdrop.style.display='none';
+      backdrop.setAttribute('aria-hidden','true');
+    });
+
+    render();
+  </script>
+</body>
+</html>

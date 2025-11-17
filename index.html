@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krushi Sathi - Smart Agricultural Platform</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+                :root {
+    /* Modern, subtle teal-cyan-blue palette (eye-catching but not loud) */
+    --primary-green: #0f766e;        /* deep teal for headings & footer */
+    --secondary-green: #06b6d4;      /* bright cyan for accents */
+    --light-green: #e6fffa;          /* very light teal for cards */
+    --lighter-green: #f8fafc;        /* page background / subtle off-white */
+    --accent-orange: #fb923c;        /* warm accent for small highlights */
+    --accent-red: #ef4444;           /* reserved for errors/alerts */
+    --accent-blue: #3b82f6;          /* vibrant blue used in button gradient */
+    --btn-gradient-start: #06b6d4;   /* cyan */
+    --btn-gradient-end: #3b82f6;     /* blue */
+    --dark-text: #0f172a;            /* slate-900 for improved contrast */
+    --light-text: #475569;           /* slate-600 */
+    --white: #ffffff;
+    --shadow: 0 6px 30px rgba(15, 23, 42, 0.12);
+    --transition: all 0.28s cubic-bezier(.2,.9,.2,1);
+}
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--btn-gradient-start), var(--btn-gradient-end));
+            color: var(--white);
+            box-shadow: 0 8px 24px rgba(59,130,246,0.18);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(59,130,246,0.18);
+            filter: brightness(1.03);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--btn-gradient-start);
+            border: 2px solid var(--btn-gradient-start);
+        }
+
+        .btn-secondary:hover {
+            background: var(--btn-gradient-start);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(6,182,212,0.12);
+        }
+        
+        /* Header Styles */
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin: 0 15px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--dark-text);
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-menu a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--secondary-green);
+            transition: var(--transition);
+        }
+        
+        .nav-menu a:hover {
+            color: var(--secondary-green);
+        }
+        
+        .nav-menu a:hover:after {
+            width: 100%;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section  */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* decorative animated orbs */
+        .hero .orb {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.03));
+            filter: blur(2px);
+            animation: floatY 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .hero .orb:nth-child(1) { top: 10%; left: -60px; animation-delay: 0s; }
+        .hero .orb:nth-child(2) { bottom: 5%; right: -40px; animation-delay: 1.8s; width: 180px; height: 180px; }
+        .hero .orb:nth-child(3) { top: 40%; right: 20%; animation-delay: 0.9s; width: 120px; height: 120px; opacity: .7; }
+
+        /* agricultural-themed floating elements (leaves/seeds) */
+        .agri-anim {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1; /* behind hero-content which is z-index:2 */
+            overflow: hidden;
+        }
+
+        .agri-item {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.95;
+            will-change: transform, opacity;
+        }
+
+        .agri-item.leaf { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234aa79b' d='M12 2c-4 1-9 5-9 10s5 9 9 10 9-5 9-10-5-9-9-10z'/></svg>"); }
+        .agri-item.seed { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='6' cy='6' r='2' fill='%237fd3c6'/></svg>"); }
+
+        /* sizes / starting positions */
+        .agri-item.leaf.l1 { width: 96px; height: 96px; left: 4%; top: 14%; animation: leafFloat 20s linear infinite; }
+        .agri-item.leaf.l2 { width: 72px; height: 72px; left: 18%; top: 62%; animation: leafFloat 24s linear infinite; animation-delay: 2s; }
+        .agri-item.leaf.l3 { width: 56px; height: 56px; right: 10%; top: 36%; animation: leafFloatReverse 22s linear infinite; animation-delay: 1s; }
+        .agri-item.seed.s1 { width: 18px; height: 18px; left: 50%; top: 6%; animation: seedDrift 14s linear infinite; }
+        .agri-item.seed.s2 { width: 22px; height: 22px; left: 76%; top: 8%; animation: seedDrift 16s linear infinite; animation-delay: 3s; }
+
+        @keyframes leafFloat {
+            0% { transform: translateX(-20%) translateY(0) rotate(-6deg); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateX(40%) translateY(-10px) rotate(6deg); }
+            90% { opacity: 1; }
+            100% { transform: translateX(120%) translateY(0) rotate(12deg); opacity: 0; }
+        }
+
+        @keyframes leafFloatReverse {
+            0% { transform: translateX(20%) translateY(0) rotate(6deg); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateX(-40%) translateY(-8px) rotate(-6deg); }
+            90% { opacity: 1; }
+            100% { transform: translateX(-120%) translateY(0) rotate(-12deg); opacity: 0; }
+        }
+
+        @keyframes seedDrift {
+            0% { transform: translateY(-10%) rotate(0deg) scale(0.9); opacity: 0; }
+            12% { opacity: 1; }
+            50% { transform: translateY(40%) rotate(18deg) scale(1); }
+            100% { transform: translateY(120%) rotate(36deg) scale(0.9); opacity: 0; }
+        }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .agri-item { animation: none !important; opacity: 0.9 !important; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+            max-width: 800px;
+            margin-top: 200px;
+            padding-top: 80px;
+            margin-left: 200px;
+        }
+        
+        
+        
+        .hero-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            animation: fadeInUp 1s ease 0.2s both;
+            margin-top: 50px;
+        }
+        
+        .hero-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+        
+        .hero-tagline {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 45px;
+            color: white;
+            animation: fadeInUp 1s ease 0.4s both;
+            font-weight: 400;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+        /* Value Proposition Section */
+        .value-prop {
+            padding: 100px 0;
+            background: var(--lighter-green);
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary-green);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .value-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: saturate(120%);
+        }
+        
+        .value-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(0,0,0,.12);
+        }
+        
+        .value-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--secondary-green);
+            box-shadow: inset 0 0 0 0 rgba(76,175,80,.25);
+            transition: var(--transition);
+        }
+        .value-card:hover .value-icon { box-shadow: inset 0 0 0 8px rgba(76,175,80,.15); }
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+            /* subtle vertical tint so pattern sits nicely on top */
+            background: linear-gradient(180deg, rgba(6,182,212,0.02), rgba(15,118,110,0.02));
+        }
+
+        /* decorative repeating SVG pattern behind features (very subtle) */
+        .features::before {
+            content: '';
+            position: absolute;
+            inset: -10% -20% -10% -20%;
+            z-index: 0;
+            pointer-events: none;
+            /* slightly larger repeating motif and increased opacity for better visibility */
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><g fill='%2306b6d4' fill-opacity='0.14'><circle cx='7' cy='7' r='2.5'/><path d='M34 10c-3.6 0-7.2 3.6-7.2 7.2S30.4 24.4 34 24.4s7.2-3.6 7.2-7.2S37.6 10 34 10z' fill='%2306b6d4' fill-opacity='0.08'/></g></svg>");
+            background-repeat: repeat;
+            background-size: 52px 52px;
+            transform: rotate(6deg) scale(1.02);
+            opacity: 1; /* make layer fully applied; SVG uses modest fill-opacity so pattern remains subtle */
+            filter: blur(0.06px) saturate(125%);
+        }
+
+        /* ensure features content sits above the decorative layer */
+        .features .container { position: relative; z-index: 1; }
+        
+        /* Offset anchors for fixed header */
+        #features, #how-it-works {
+            scroll-margin-top: 90px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            isolation: isolate;
+            display: flex;               /* make card a column so content can stretch */
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        .feature-card:after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent, rgba(76,175,80,.08));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+        .feature-card:hover:after { opacity: 1; }
+
+        /* Image area stays a fixed height but doesn't prevent content from stretching */
+        .feature-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            flex: 0 0 200px;
+        }
+
+        /* Content should take remaining space so all cards are equal height */
+        .feature-content {
+            padding: 25px;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .feature-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-content h3 i {
+            margin-right: 10px;
+            color: var(--secondary-green);
+        }
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .testimonial-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-size: cover;
+            background-position: center;
+        }
+        /* Footer */
+        footer {
+            /* modern neutral charcoal -> deep-slate gradient (avoids blue-heavy look) */
+            background: linear-gradient(135deg, #0b1220 0%, #111827 100%);
+            color: rgba(255,255,255,0.95);
+            padding: 70px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-section h3 {
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-orange);
+            padding-left: 6px;
+            text-decoration: underline;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            color: rgba(255,255,255,0.9);
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: linear-gradient(90deg, rgba(251,146,60,0.14), rgba(59,130,246,0.06));
+            transform: translateY(-3px);
+            color: var(--accent-orange);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255,255,255,0.75);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatY {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(10px); }
+        }
+        
+        .animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .animate.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hidden { display: none !important; }
+
+        /* Footer wave & reveal animations */
+        .footer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-wave {
+            display: block;
+            width: 100%;
+            height: 84px;
+            line-height: 0;
+            margin-bottom: -2px; /* tuck into footer */
+        }
+
+        .footer-wave svg { display: block; width: 100%; height: 100%; }
+
+        /* subtle floating motion for the wave shape */
+        @keyframes waveFloat {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(-6px) translateY(4px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+
+        .footer-wave .wave { animation: waveFloat 7s ease-in-out infinite; transform-origin: center; opacity: 0.9; }
+
+        /* reveal animation for footer content */
+        .footer-animate { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .footer-animate.inview { opacity: 1; transform: translateY(0); }
+
+        /* stagger for child elements inside footer */
+        .footer .footer-section { transition-delay: 0.12s; }
+        .footer .footer-section.inview { transition-delay: 0s; }
+        
+        /* Auth + Dashboard */
+        #login, #dashboard { scroll-margin-top: 90px; }
+        .auth-card {
+            max-width: 420px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        .auth-card h3 { margin-bottom: 10px; }
+        .form-group { margin: 14px 0; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #e1e5e8;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-group input:focus { border-color: var(--secondary-green); box-shadow: 0 0 0 4px rgba(76,175,80,.08); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .dash-card {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .dash-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: 0.5s;
+            }
+            
+            .nav-menu.active {
+                left: 0;
+            }
+            
+            .nav-menu li {
+                margin: 15px 0;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .steps {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .steps:before {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-logo {
+                font-size: 3.5rem;
+            }
+            
+            .hero-tagline {
+                font-size: 1.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+        /* Custom cursor (dot + ring) */
+        .custom-cursor, .custom-cursor-ring {
+            position: fixed;
+            left: 0; top: 0;
+            width: 10px; height: 10px;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: opacity 220ms ease, transform 220ms ease;
+            z-index: 99999;
+            mix-blend-mode: normal;
+        }
+        .custom-cursor { background: rgba(127,211,198,0.95); border-radius: 50%; box-shadow: 0 4px 18px rgba(10,20,20,0.08); }
+        .custom-cursor-ring { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(127,211,198,0.28); background: transparent; }
+        .custom-cursor.hidden, .custom-cursor-ring.hidden { opacity: 0; }
+        .custom-cursor-ring.active { transform: translate(-50%, -50%) scale(1.14); border-color: rgba(127,211,198,0.42); }
+
+        @media (pointer: coarse), (max-width: 800px) {
+            /* Hide custom cursor on touch devices */
+            .custom-cursor, .custom-cursor-ring { display: none !important; }
+        }
+        /* Toggle sparkle visuals */
+        .toggle-sparkle { position: relative; overflow: visible; }
+        .toggle-sparkle .sparkle {
+            position: absolute;
+            width: 8px; height: 8px;
+            background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            filter: drop-shadow(0 4px 10px rgba(127,211,198,0.24));
+            transform: translate(-50%, -50%) scale(0);
+            animation: sparkle-pop 900ms cubic-bezier(.2,.9,.2,1) forwards;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes sparkle-pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(0.5); opacity: 0; }
+        }
+
+        /* darker sparkle for active state */
+        .toggle-sparkle .sparkle.alt { background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(246,177,104,0.9) 40%, rgba(246,177,104,0.0) 70%); filter: drop-shadow(0 6px 12px rgba(246,177,104,0.12)); }
+
+        @media (prefers-reduced-motion: reduce), (pointer: coarse) {
+            .toggle-sparkle .sparkle { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-seedling" style="color: #4CAF50; font-size: 28px; margin-right: 10px;"></i>
+                <span class="logo-text">Krushi Sathi</span>
+            </div>
+            
+            <div class="mobile-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#">About Us</a></li>
+                <li class="hidden" id="dashboardNav"><a href="welcome.html">Dashboard</a></li>
+            </ul>
+            
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-secondary" id="loginBtn">Login</a>
+                <button class="btn btn-primary hidden" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="agri-anim" aria-hidden="true">
+                <div class="agri-item leaf l1"></div>
+                <div class="agri-item leaf l2"></div>
+                <div class="agri-item leaf l3"></div>
+                <div class="agri-item seed s1"></div>
+                <div class="agri-item seed s2"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-icons">
+                    <div class="hero-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="hero-icon">
+                        <i class="fas fa-tractor"></i>
+                    </div>
+                </div>
+                <div class="hero-tagline">Empowering Farmers Through Smart Agri-Tech</div>
+                <div class="hero-buttons">
+                    <a href="login.html" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Features</h2>
+                <p>Comprehensive tools designed for the modern farmer</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2a89dPkh1GFLsVYkO0PHBDEsZf4fBhjAUeg&s');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-tractor"></i> Equipment Rental</h3>
+                        <p>Access to modern farming equipment and tools through our convenient rental service network.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://friscofreshmarket.com/wp-content/uploads/2022/09/fall-farmers-market-scaled.jpeg');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-chart-line"></i> Live Market Pricing</h3>
+                        <p>Real-time market prices and trends to help you make informed selling decisions and maximize profits.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://plutuseducation.com/blog/wp-content/uploads/2024/10/DALL%C2%B7E-2024-10-21-21.06.56-A-detailed-thumbnail-image-illustrating-the-concept-of-Agricultural-Diversification.-The-image-features-a-lush-vibrant-farm-scene-divided-into-segm.webp');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-seedling"></i> Smart diversification</h3>
+                        <p>Dual crop strategy that helps farmers grow two or more crops together for higher yeild and year round income.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://img.freepik.com/premium-photo/workers-work-field-harvesting-manual-labor-farming-agriculture-agro-industry_926199-2094884.jpg');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-recycle"></i> Labour Services</h3>
+                        <p>Connects farmers with skilled local labourers quickly and fairly ensuring on-time farming operations and improved productivity.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://tse1.mm.bing.net/th/id/OIP.XYHcc0NmGuU_W73dG8WQLwHaEK?pid=Api&P=0&h=180');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-seedling"></i> Farm Supply Portal</h3>
+                        <p>Digital market place for sellers to lend tools and sell seeds & fertilizers that reaches farmers directly.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1Hy_Pyttr7eD4h5-z1mheA2tsAIHkg3dfcw&s');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-cloud-sun"></i> Weather Intelligence</h3>
+                        <p>Real-time weather updates, alerts, and seasonal forecasts tailored to your location for better crop planning.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card animate">
+                    <div class="feature-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2w7Mh_jbbmNKyqrWsqPLmcOlghuMiZCNCiQ&s');"></div>
+                    <div class="feature-content">
+                        <h3><i class="fas fa-language"></i> Multi-Language Support</h3>
+                        <p>Available in multiple regional languages to ensure accessibility for farmers across different regions.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- decorative wave divider -->
+    <div class="footer-wave" aria-hidden="true">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path class="wave" d="M0,32 C150,120 350,0 600,32 C850,64 1050,16 1200,64 L1200,120 L0,120 Z" fill="#0b1220"></path>
+        </svg>
+    </div>
+    <footer class="footer">
+                
+                <div class="footer-section footer-animate">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> +91 9380793314</li>
+                        <li><i class="fas fa-envelope"></i> support@krushisathi.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Banglore, India</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom footer-animate">
+                <p>&copy; 2025 Krushi Sathi. All rights reserved. | Designed for Farmers, By students</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+        
+        // Scroll Animation
+        function checkAnimation() {
+            const elements = document.querySelectorAll('.animate');
+            elements.forEach(element => {
+                const position = element.getBoundingClientRect();
+                if (position.top < window.innerHeight - 100) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+        
+        // Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            const speed = 200;
+            
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const increment = target / speed;
+                
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(() => animateCounters(), 1);
+                } else {
+                    counter.innerText = target;
+                }
+            });
+        }
+
+        // Simple Auth
+        const AUTH_KEY = 'ks_auth';
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const dashboardNav = document.getElementById('dashboardNav');
+
+        function isLoggedIn() {
+            return localStorage.getItem(AUTH_KEY) === '1';
+        }
+        function updateAuthUI() {
+            if (isLoggedIn()) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                dashboardNav.classList.remove('hidden');
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                dashboardNav.classList.add('hidden');
+            }
+        }
+        function guardRoutes() {
+            const hash = location.hash || '';
+            if (hash === '#dashboard' && !isLoggedIn()) {
+                location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Events
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem(AUTH_KEY);
+                updateAuthUI();
+                location.href = 'login.html';
+            });
+        }
+        window.addEventListener('hashchange', guardRoutes);
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            checkAnimation();
+
+            // Animate counters when stats section is in view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            const statsSection = document.querySelector('.stats');
+            if (statsSection) observer.observe(statsSection);
+
+            updateAuthUI();
+            guardRoutes();
+        });
+        
+        // Check animation on scroll
+        window.addEventListener('scroll', checkAnimation);
+
+        // Footer reveal using IntersectionObserver
+        (function() {
+            const footer = document.querySelector('footer.footer');
+            const wave = document.querySelector('.footer-wave');
+            if (!footer) return;
+
+            const els = footer.querySelectorAll('.footer-animate');
+
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        els.forEach((el, i) => setTimeout(() => el.classList.add('inview'), i * 80));
+                        if (wave) wave.querySelector('.wave').style.opacity = '1';
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            obs.observe(footer);
+        })();
+
+        // CTA removed: reveal observer deleted
+    </script>
+    <script>
+        (function() {
+            // disable on touch or when prefers-reduced-motion
+            if (('ontouchstart' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            // create cursor elements
+            const dot = document.createElement('div');
+            dot.className = 'custom-cursor hidden';
+            const ring = document.createElement('div');
+            ring.className = 'custom-cursor-ring hidden';
+            document.body.appendChild(dot);
+            document.body.appendChild(ring);
+
+            let mouseX = -100, mouseY = -100; // current mouse
+            let ringX = -100, ringY = -100;   // ring position (lag)
+
+            const ease = 0.18;
+
+            function onMove(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                dot.style.left = mouseX + 'px';
+                dot.style.top = mouseY + 'px';
+                dot.classList.remove('hidden');
+                ring.classList.remove('hidden');
+            }
+
+            function animate() {
+                ringX += (mouseX - ringX) * ease;
+                ringY += (mouseY - ringY) * ease;
+                ring.style.left = ringX + 'px';
+                ring.style.top = ringY + 'px';
+                requestAnimationFrame(animate);
+            }
+
+            document.addEventListener('mousemove', onMove);
+            requestAnimationFrame(animate);
+
+            // highlight when hovering interactive elements
+            const interactive = 'a, button, .btn, input, textarea, select, label';
+            document.addEventListener('mouseover', (e) => {
+                const el = e.target.closest(interactive);
+                if (el) {
+                    ring.classList.add('active');
+                }
+            });
+            document.addEventListener('mouseout', (e) => {
+                const el = e.relatedTarget;
+                if (!el || !el.closest || !el.closest(interactive)) {
+                    ring.classList.remove('active');
+                }
+            });
+
+            // optional click feedback
+            document.addEventListener('mousedown', () => { dot.style.transform = 'translate(-50%, -50%) scale(0.85)'; });
+            document.addEventListener('mouseup', () => { dot.style.transform = 'translate(-50%, -50%) scale(1)'; });
+        })();
+    </script>
+    <script>
+        (function() {
+            if (('ontouchstart' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const targets = [];
+            const demo = document.getElementById('demoToggle');
+            if (demo) targets.push(demo);
+            const mobile = document.getElementById('mobileToggle');
+            if (mobile) targets.push(mobile);
+
+            if (!targets.length) return;
+
+            targets.forEach(el => el.classList.add('toggle-sparkle'));
+
+            function spawnSparkle(parent) {
+                const s = document.createElement('span');
+                s.className = 'sparkle';
+                const rect = parent.getBoundingClientRect();
+                const x = Math.random() * rect.width;
+                const y = Math.random() * rect.height;
+                s.style.left = x + 'px';
+                s.style.top = y + 'px';
+                if (Math.random() > 0.6) s.classList.add('alt');
+                parent.appendChild(s);
+                setTimeout(() => s.remove(), 900);
+            }
+
+            // periodic sparkles while visible
+            setInterval(() => {
+                targets.forEach(el => {
+                    const r = el.getBoundingClientRect();
+                    if (r.top < window.innerHeight && r.bottom > 0) {
+                        // spawn 1-2 sparkles
+                        const count = Math.random() > 0.7 ? 2 : 1;
+                        for (let i=0;i<count;i++) spawnSparkle(el);
+                    }
+                });
+            }, 1500);
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"              content="width=device-width, initial-scale=1.0">
+  <title>Krushi Sathi | Farmer Dashboard</title>
+  <!-- Font: Poppins from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --green-main: #4db47a;
+      --green-sidebar: #376d50;
+      --green-card-bg: #eaf7ee;
+      --pastel-bg: #f5fdf7;
+      --blue-soft: #caeafc;
+      --shadow-card: 0 8px 24px rgba(80,128,80,0.07);
+      --white: #fff;
+      --gray: #eef1f3;
+      --danger: #ff4e4e;
+      --gray-dark: #333;
+      --radius-main: 18px;
+    }
+    html, body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: var(--pastel-bg);
+      margin: 0;
+      height: 100%;
+      color: var(--gray-dark);
+      min-height: 100vh;
+    }
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: var(--green-sidebar);
+      min-width: 220px;
+      width: 220px;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 0 24px rgba(45,100,45,0.08);
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 20;
+      transition: all 0.25s;
+    }
+    .sidebar.collapsed {
+      width: 67px;
+    }
+    .sidebar__logo {
+      padding: 32px 0 16px 32px;
+      font-size: 1.22rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      display: flex;
+      align-items: center;
+    }
+    .sidebar__logo span { font-size: 1.6rem; margin-right: 11px;}
+    .sidebar__desc {
+      font-size: .95rem;
+      color: #b8f2cd;
+      margin-left: 32px;
+      margin-bottom: 18px;
+      display: block;
+      letter-spacing: .01em;
+    }
+    .sidebar__menu {
+      flex-grow: 1;
+      margin-top: 16px;
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar__item {
+      display: flex;
+      align-items: center;
+      padding: 13px 32px 13px 32px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      outline: none;
+      transition: background 0.15s, color 0.15s;
+      border-radius: var(--radius-main);
+      margin: 3px 12px;
+      gap: 15px;
+      user-select: none;
+      position: relative;
+    }
+    .sidebar .sidebar__item:hover, .sidebar__item.active {
+      background: var(--green-main);
+      color: var(--white);
+      box-shadow: var(--shadow-card);
+    }
+    .sidebar__item i {
+      min-width: 24px;
+      font-size: 1.1rem;
+      text-align: center;
+      filter: drop-shadow(0 0 3px #29433440);
+    }
+    .sidebar__item .item-name { flex: 1; }
+    .sidebar__logout {
+      background: var(--danger)!important;
+      color: white;
+      font-weight: bold;
+      margin: 3px 32px 15px;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.19s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar__logout:hover { background: #d73636;}
+    .sidebar__footer {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .farmer-status {
+      background: #0bb545;
+      color: #fff;
+      padding: 6px 18px 6px 18px;
+      border-radius: 12px;
+      font-size: .97rem;
+      font-weight: 600;
+      display: inline-block;
+      box-shadow: 0 1px 6px rgba(0,100,0,0.07);
+    }
+    /* Top bar */
+    .main-content {
+      margin-left: 220px;
+      width: calc(100vw - 220px);
+      background: var(--pastel-bg);
+      min-height: 100vh;
+      padding-bottom: 56px;
+      transition: margin-left 0.25s, width 0.25s;
+    }
+    .sidebar.collapsed + .main-content {
+      margin-left: 67px;
+      width: calc(100vw - 67px);
+    }
+    .topbar {
+      background: var(--white);
+      box-shadow: 0 2px 18px rgba(0,64,32,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 0 0 var(--radius-main) var(--radius-main);
+      padding: 26px 48px 21px 18px;
+      margin-top: 19px;
+      margin-bottom: 12px;
+    }
+    .topbar__hello {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--green-main);
+    }
+    .topbar__subtitle {
+      font-size: 1rem;
+      color: #7da58f;
+      margin-top: 7px;
+      letter-spacing: .01em;
+    }
+    .topbar__right {
+      display: flex;
+      align-items: flex-end;
+      flex-direction: column;
+      min-width: 120px;
+      font-size: 1.04rem;
+      color: #35985e;
+      font-family: 'Nunito', 'Poppins', Arial;
+    }
+    .topbar__right .topbar__time {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    .topbar__right .topbar__date {
+      font-size: .99rem;
+      color: #459E73;
+      margin-top: 2px;
+    }
+   .dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 36px;
+  margin: 18px 40px 0 40px;
+}
+.dashboard-card {
+  background: #eaf7ee;
+  border-radius: 24px;
+  min-height: 370px;
+  box-shadow: 0 6px 30px #90cba02f;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: box-shadow .16s, transform .13s;
+  animation: fade-in .5s;
+}
+.dashboard-card:hover {
+  box-shadow: 0 16px 38px 0 rgba(80,128,80,0.14);
+  transform: translateY(-3px) scale(1.021);
+  z-index: 2;
+}
+.dashboard-card-photo {
+  width: 100%;
+  min-height: 170px;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 24px 24px 0 0;
+  margin-bottom: 0;
+  display: block;
+}
+.dashboard-card__body {
+  padding: 30px 28px 22px 28px;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.dashboard-card__title {
+  font-size: 1.37rem;
+  font-weight: 700;
+  color: #376d50;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dashboard-card__desc {
+  font-size: 1.11rem;
+  color: #358363;
+  margin-top: 2px;
+}
+@media(max-width:900px){
+  .dashboard-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .dashboard-grid{grid-template-columns:1fr;}
+  .dashboard-card-photo {min-height:100px; max-height:120px;}
+  .dashboard-card {min-height:180px;}
+  .dashboard-card__body {padding:16px 10px;}
+}
+@keyframes fade-in {
+  0% { opacity:0; transform: translateY(24px);}
+  100% { opacity:1; transform: none;}
+}
+
+    /* Recent Activity */
+    .recent-activity {
+      margin: 40px 32px 0 32px;
+      background: var(--white);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-card);
+      padding: 22px 32px 24px 32px;
+      animation: fade-in .6s;
+    }
+    .recent-activity__title {
+      font-size: 1.23rem;
+      font-weight: 600;
+      color: var(--green-sidebar);
+      margin-bottom: 18px;
+    }
+    .activity-list {
+      padding: 0; margin: 0;
+      list-style: none;
+    }
+    .activity-list__item {
+      font-size: 1rem;
+      color: #358363;
+      padding: 13px 0;
+      border-bottom: 1px solid #e2e9d9;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      animation: fade-in .59s;
+    }
+    .activity-list__item:last-child {
+      border: none;
+    }
+    .activity-icon {
+      font-size: 1.3em;
+      color: var(--green-main);
+      margin-top: 1px;
+    }
+    .activity-list__desc {
+      flex: 1;
+    }
+    .activity-list__time {
+      color: #86988a;
+      font-size: .99rem;
+      margin-left: 18px;
+      min-width: 80px;
+      text-align: right;
+      font-style: italic;
+    }
+
+    /* Dynamic Pages Common Styling */
+    .show {
+      display: block !important;
+      opacity: 1 !important;
+      animation: fade-in .7s;
+    }
+    .hide { display: none !important; opacity: 0;}
+    .main-section {
+      margin: 16px 32px 0px 32px;
+      background: var(--white);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-card);
+      min-height: 275px;
+      padding: 31px 26px 18px 22px;
+    }
+    /* RENTAL EQUIPMENTS */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .tool-card {
+      background: var(--green-card-bg);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-card);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: box-shadow .15s;
+      animation: fade-in .6s;
+    }
+    .tool-card:hover {
+      box-shadow: 0 10px 28px 0 rgba(80,128,80,0.14);
+      transform: scale(1.02) translateY(-2px);
+      z-index: 2;
+    }
+    .tool-card img {
+      width: 80px;
+      height: 80px;
+      background: var(--gray);
+      border-radius: 12px;
+      margin-bottom: 11px;
+      object-fit: contain;
+      box-shadow: 0 2px 6px #90c9a055;
+    }
+    .tool-card__name {
+      font-size: 1.11rem;
+      font-weight: 600;
+      color: var(--green-sidebar);
+      margin-bottom: 4px;
+    }
+    .tool-card__desc { font-size: .97rem; color: #46845c; }
+    .tool-card__price {
+      color: #23a174;
+      font-size: 1.05rem;
+      margin: 8px 0 8px 0;
+      font-weight: bold;
+    }
+    .tool-card__btn {
+      margin-top: 8px;
+      background: var(--green-main);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 9px;
+      padding: 9px 23px;
+      box-shadow: 0 2px 9px #99d9a05a;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .tool-card__btn:hover { background: #369967;}
+    /* MARKET PRICE */
+    .market-header {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 22px;
+    }
+    .market-input {
+      border: 1px solid #d5e5d9;
+      border-radius: 9px;
+      padding: 8px 13px;
+      font-size: 1rem;
+      margin-right: 7px;
+    }
+    .market-dropdown {
+      background: #eaf7ee;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 13px;
+      font-size: 1rem;
+      margin-right: 7px;
+    }
+    .market-table {
+      border-collapse: collapse;
+      margin-top: 16px;
+      width: 100%;
+    }
+    .market-table th, .market-table td {
+      border: 1px solid #d7efdd;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .market-table th {
+      background: #d2f5e1;
+      font-weight: 600;
+      color: #236841;
+    }
+    .market-table td {
+      background: #f7fff7;
+    }
+    #marketChart {
+      margin-top: 22px;
+      box-shadow: 0 3px 11px #7bc9b02d;
+      background: var(--pastel-bg);
+      border-radius: 19px;
+      padding: 22px;
+    }
+    /* SMART DIVERSIFICATION */
+    .div-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 22px;
+    }
+    .div-table th, .div-table td {
+      border: 1px solid #d7efdd;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .div-table th {
+      background: #d2f5e1;
+      font-weight: 600;
+      color: #236841;
+    }
+    .div-table td {
+      background: #f7fff7;
+    }
+    .diversi-form {
+      display: flex;
+      align-items:center;
+      gap: 19px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .diversi-form input,
+    .diversi-form select {
+      border: 1px solid #d5e5d9;
+      border-radius: 9px;
+      padding: 7px 16px;
+      font-size: 1rem;
+      margin-right: 7px;
+      min-width: 140px;
+    }
+    .diversi-form-btn {
+      background: var(--green-main);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 9px;
+      padding: 9px 23px;
+      cursor: pointer;
+      box-shadow: 0 2px 9px #99d9a05a;
+      transition: background .18s;
+    }
+    .diversi-form-btn:hover { background: #369967;}
+    .diversi-rec-box {
+      background: #eaf7ee;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #4db47a14;
+      margin: 0 7px 18px 0;
+      padding: 15px 17px;
+      display: inline-block;
+      animation: fade-in .6s;
+    }
+    /* WEATHER UPDATE */
+    .weather-card {
+      background: #eaf7ee;
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      gap: 27px;
+      align-items: center;
+      padding: 28px 21px;
+      margin-bottom: 17px;
+      min-height: 120px;
+      animation: fade-in .6s;
+    }
+    .weather-icon {
+      font-size: 3.8rem;
+      color: #3c9c76;
+      margin-right: 9px;
+    }
+    .weather-info {
+      font-size: 1.13rem;
+      color: #3a6e49;
+    }
+    .weather-details {
+      margin-top: 11px;
+      font-size: .98rem;
+      color: #2c5341;
+    }
+    .weather-search-input {
+      border: 1px solid #cde7da;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 1rem;
+      margin-right: 7px;
+      width: 180px;
+      margin-bottom: 13px;
+    }
+    .weather-search-btn {
+      background: var(--green-main);
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 9px;
+      padding: 8px 19px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 1px 7px #81daac41;
+      font-weight: 600;
+    }
+    .weather-search-btn:hover { background: #369967;}
+    /* MY FIELD */
+    .field-form {
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .field-form input, .field-form textarea {
+      border: 1px solid #d5e5d9;
+      border-radius: 9px;
+      padding: 8px 13px;
+      font-size: 1rem;
+      margin-right: 7px;
+      min-width: 140px;
+    }
+    .field-form textarea {
+      min-height: 42px;
+      max-height: 110px;
+      resize: vertical;
+    }
+    .field-form-btn {
+      background: var(--green-main);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 9px;
+      padding: 9px 23px;
+      cursor: pointer;
+      box-shadow: 0 2px 9px #99d9a05a;
+      transition: background .18s;
+      margin-left: 5px;
+    }
+    .field-form-btn:hover { background: #369967;}
+    .field-preview-img {
+      width: 95px;
+      height: 95px;
+      border-radius: 13px;
+      object-fit: cover;
+      background: #eef1f3;
+      display: block;
+      margin-bottom: 11px;
+    }
+    .field-info-card {
+      background: #eaf7ee;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #4db47a14;
+      margin-bottom: 12px;
+      padding: 21px 23px;
+      display: flex;
+      gap: 27px;
+      align-items: center;
+      animation: fade-in .6s;
+    }
+    /* MY BOOKINGS */
+    .booking-list {
+      margin-top: 12px;
+    }
+    .booking-card {
+      background: #eaf7ee;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #4db47a14;
+      margin-bottom: 12px;
+      padding: 21px 23px;
+      display: flex;
+      gap: 27px;
+      align-items: center;
+      animation: fade-in .6s;
+    }
+    .booking-card img {
+      width: 77px; height: 77px; border-radius: 10px; object-fit: contain; background: #eef1f3;
+      box-shadow: 0 2px 6px #90c9a055;
+    }
+    .booking-info {
+      flex: 1;
+    }
+    .booking-name {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #567c65;
+      margin-bottom: 3px;
+    }
+    .booking-date { color: #1e6d4d; font-size: .99rem; }
+    .booking-duration { color: #487863; font-size: .98rem; }
+    .booking-status {
+      font-size: .97rem;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 6px 17px;
+      margin-left: 8px;
+      color: #fff;
+      background: #1eb24c;
+    }
+    .booking-status.Completed { background: #29B370; }
+    .booking-status.Cancelled { background: #c84747 }
+    /* NOTIFICATIONS */
+    .notification-list {
+      list-style: none;
+      padding: 0; margin: 0;
+    }
+    .notification-card {
+      background: #eaf7ee;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #4db47a14;
+      margin-bottom: 11px;
+      padding: 17px 21px;
+      display: flex;
+      gap: 19px;
+      align-items: center;
+      font-size: 1.04rem;
+      animation: fade-in .6s;
+    }
+    .notification-icon {
+      font-size: 1.55em;
+      min-width: 28px;
+      color: #58b18d;
+    }
+    .notification-msg {
+      flex: 1;
+      color: #30644e;
+      font-size: 1.02rem;
+    }
+    .notification-time {
+      color: #86988a;
+      font-size: .92rem;
+      text-align: right;
+      min-width: 75px;
+      font-style: italic;
+    }
+    /* FEEDBACKS */
+    .feedback-form {
+      display: flex;
+      align-items: flex-start;
+      gap: 17px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .feedback-form input, .feedback-form textarea {
+      border: 1px solid #d5e5d9;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 1rem;
+      margin-right: 7px;
+      min-width: 120px;
+    }
+    .feedback-form textarea {
+      min-height: 38px; max-height: 85px;
+      resize: vertical;
+    }
+    .feedback-form-btn {
+      background: var(--green-main);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 9px;
+      padding: 8px 22px;
+      cursor: pointer;
+      margin-top:5px;
+      box-shadow: 0 1px 7px #81daac41;
+      font-weight: 600;
+      transition: background .18s;
+    }
+    .feedback-form-btn:hover { background: #369967;}
+    .feedback-list {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feedback-card {
+      background: #eaf7ee;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px #4db47a12;
+      padding: 12px 15px 15px 17px;
+      display: flex;
+      align-items: flex-start;
+      gap: 19px;
+      animation: fade-in .5s;
+    }
+    .feedback-rating { color: #f6bb3b; font-size: 1.4rem; margin-right: 4px;}
+    .feedback-main { flex: 1; }
+    .success-alert {
+      background: #46dc96;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 1.03rem;
+      font-weight: 600;
+      box-shadow: 0 2px 11px #0ad18b18;
+      animation: fade-in .4s;
+      margin-bottom: 11px;
+    }
+    /* Animations */
+    @keyframes fade-in {
+      0% { opacity:0; transform: translateY(19px); }
+      100% { opacity:1; transform: none;}
+    }
+    /* Responsive */
+    @media(max-width: 940px) {
+      .dashboard-grid, .tools-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 740px) {
+      .sidebar { position: fixed; width: 56px; min-width: 56px;}
+      .main-content { margin-left: 56px; width: calc(100vw - 56px);}
+      .sidebar__logo, .sidebar__desc, .item-name, .sidebar__footer { display:none;}
+      .sidebar.collapsed { width: 56px;}
+      .sidebar__logout { margin: 3px 12px 13px; }
+      .farmer-status { padding: 6px 11px;}
+      .topbar { padding: 21px 13px; }
+      .dashboard-grid, .tools-grid { grid-template-columns: 1fr;}
+      .main-section, .recent-activity { padding: 21px 9px 15px 8px; margin: 16px 9px 0px 7px;}
+    }
+    @media(max-width: 510px) {
+      .topbar { flex-direction: column; align-items: flex-start;}
+      .dashboard-grid, .tools-grid { grid-template-columns: 1fr;}
+      .main-section, .recent-activity { padding: 13px 2px 10px 2px; margin: 9px 0px 0px 0px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div>
+      <div class="sidebar__logo">
+        <span>🌿</span> Krushi Sathi
+      </div>
+      <div class="sidebar__desc">Smart Agricultural Platform</div>
+      <ul class="sidebar__menu" id="sidebarMenu">
+        <li class="sidebar__item active" data-page="dashboard"><i class="fa fa-home"></i><span class="item-name">Dashboard</span></li>
+        <li class="sidebar__item" data-page="rental"><i class="fa fa-tractor"></i><span class="item-name">Rental Equipments</span></li>
+        <li class="sidebar__item" data-page="market"><i class="fa fa-chart-line"></i><span class="item-name">Market Price</span></li>
+        <li class="sidebar__item" data-page="diversification"><i class="fa fa-leaf"></i><span class="item-name">Smart Diversification</span></li>
+        <li class="sidebar__item" data-page="weather"><i class="fa fa-cloud-sun"></i><span class="item-name">Weather Update</span></li>
+        <li class="sidebar__item" data-page="field"><i class="fa fa-map-marker-alt"></i><span class="item-name">My Field</span></li>
+        <li class="sidebar__item" data-page="bookings"><i class="fa fa-book"></i><span class="item-name">My Bookings</span></li>
+        <li class="sidebar__item" data-page="notifications"><i class="fa fa-bell"></i><span class="item-name">Notifications</span></li>
+        <li class="sidebar__item" data-page="feedbacks"><i class="fa fa-star"></i><span class="item-name">Your Feedbacks</span></li>
+        <button class="sidebar__logout" id="logoutBtn"><i class="fa fa-sign-out-alt"></i> Log out</button>
+      </ul>
+    </div>
+    <div class="sidebar__footer">
+      <span class="farmer-status"><i class="fa fa-circle" style="color: #9bffbd; margin-right:7px;"></i>Farmer</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar__hello" id="welcomeMsg">Welcome back, Lavanya 👋</div>
+        <div class="topbar__subtitle">Here’s what’s happening on your farm today.</div>
+      </div>
+      <div class="topbar__right">
+        <span class="topbar__time" id="currentTime">10:33 AM</span>
+        <span class="topbar__date" id="currentDate">Wednesday, October 22, 2025</span>
+      </div>
+    </div>
+    <!-- Dashboard Default -->
+    <div id="dashboardSection" class="show">
+     <div class="dashboard-grid">
+  <!-- 1. Equipment Rental -->
+  <div class="dashboard-card" onclick="switchSection('rental')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2a89dPkh1GFLsVYkO0PHBDEsZf4fBhjAUeg&s" class="dashboard-card-photo" alt="Equipment Rental">
+    <div class="dashboard-card__body">
+      <span class="dashboard-card__title"><i class="fas fa-tractor"></i> Equipment Rental</span>
+      <span class="dashboard-card__desc">Access to modern farming equipment and tools through our convenient rental service network.</span>
+    </div>
+  </div>
+  <!-- 2. Live Market Pricing -->
+  <div class="dashboard-card" onclick="switchSection('market')">
+    <img src="https://friscofreshmarket.com/wp-content/uploads/2022/09/fall-farmers-market-scaled.jpeg" class="dashboard-card-photo" alt="Market Pricing">
+    <div class="dashboard-card__body">
+      <span class="dashboard-card__title"><i class="fas fa-chart-line"></i> Live Market Pricing</span>
+      <span class="dashboard-card__desc">Real-time market prices and trends to help you make informed selling decisions and maximize profits.</span>
+    </div>
+  </div>
+  <!-- 3. Smart Diversification -->
+  <div class="dashboard-card" onclick="switchSection('diversification')">
+    <img src="https://plutuseducation.com/blog/wp-content/uploads/2024/10/DALL%C2%B7E-2024-10-21-21.06.56-A-detailed-thumbnail-image-illustrating-the-concept-of-Agricultural-Diversification.-The-image-features-a-lush-vibrant-farm-scene-divided-into-segm.webp" class="dashboard-card-photo" alt="Smart Diversification">
+    <div class="dashboard-card__body">
+      <span class="dashboard-card__title"><i class="fas fa-seedling"></i> Smart Diversification</span>
+      <span class="dashboard-card__desc">Dual crop strategy that helps farmers grow two or more crops together for higher yield and year-round income.</span>
+    </div>
+  </div>
+  <!-- 4. Weather Check -->
+  <div class="dashboard-card" onclick="switchSection('weather')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1Hy_Pyttr7eD4h5-z1mheA2tsAIHkg3dfcw&s" class="dashboard-card-photo" alt="Weather Check">
+    <div class="dashboard-card__body">
+      <span class="dashboard-card__title"><i class="fas fa-cloud-sun"></i> Weather Check</span>
+      <span class="dashboard-card__desc">Check today’s weather and irrigation suggestions.</span>
+    </div>
+  </div>
+</div>
+
+      <div class="recent-activity">
+        <div class="recent-activity__title">Recent Activity</div>
+        <ul class="activity-list" id="activityList">
+          <!-- Recent activities go here (populated dynamically) -->
+        </ul>
+      </div>
+    </div>
+    <!-- Pages, loaded by JS -->
+    <div id="rentalSection" class="main-section hide"></div>
+    <div id="marketSection" class="main-section hide"></div>
+    <div id="diversificationSection" class="main-section hide"></div>
+    <div id="weatherSection" class="main-section hide"></div>
+    <div id="fieldSection" class="main-section hide"></div>
+    <div id="bookingsSection" class="main-section hide"></div>
+    <div id="notificationsSection" class="main-section hide"></div>
+    <div id="feedbacksSection" class="main-section hide"></div>
+  </div>
+  <script>
+    // --- LocalStorage & User Data Setup ---
+    const username = localStorage.getItem("username") || "Lavanya";
+    document.getElementById("welcomeMsg").innerHTML = `Welcome back, ${username} 👋`;
+    // ---- Top Bar Time & Date ----
+    function updateTimeDate() {
+      const dt = new Date();
+      let hr = dt.getHours(), mn = dt.getMinutes();
+      let ap = hr >= 12 ? "PM" : "AM";
+      let hr12 = hr % 12 || 12;
+      document.getElementById("currentTime").textContent = `${hr12}:${('0'+mn).slice(-2)} ${ap}`;
+      document.getElementById("currentDate").textContent =
+        dt.toLocaleDateString("en-us", { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    }
+    setInterval(updateTimeDate, 1000);
+    updateTimeDate();
+
+    // --- Sidebar Navigation ---
+    const sections = [
+      "dashboardSection",
+      "rentalSection",
+      "marketSection",
+      "diversificationSection",
+      "weatherSection",
+      "fieldSection",
+      "bookingsSection",
+      "notificationsSection",
+      "feedbacksSection"
+    ];
+    function switchSection(pageKey) {
+      for(let sec of sections) document.getElementById(sec).classList.add("hide");
+      let showId = {
+        dashboard: "dashboardSection",
+        rental: "rentalSection",
+        market: "marketSection",
+        diversification: "diversificationSection",
+        weather: "weatherSection",
+        field: "fieldSection",
+        bookings: "bookingsSection",
+        notifications: "notificationsSection",
+        feedbacks: "feedbacksSection"
+      }[pageKey];
+      if(showId) document.getElementById(showId).classList.remove("hide");
+      // sidebar marks
+      document.querySelectorAll(".sidebar__item").forEach(item => item.classList.remove("active"));
+      document.querySelector(`.sidebar__item[data-page='${pageKey}']`).classList.add("active");
+      if(window.innerWidth<760) document.getElementById("sidebar").classList.add("collapsed");
+      else document.getElementById("sidebar").classList.remove("collapsed");
+    }
+    document.getElementById("sidebarMenu").addEventListener("click", function(e) {
+      let tgt = e.target.closest(".sidebar__item");
+      if(tgt && tgt.dataset.page) switchSection(tgt.dataset.page);
+    });
+    // Logout button
+    document.getElementById("logoutBtn").onclick = function() {
+      localStorage.clear();
+      alert("You've successfully logged out. See you soon!");
+      location.reload();
+    };
+
+    // -------- Dashboard Recent Activity ------
+    function loadRecentActivity() {
+      const activities = [
+        {icon:"cloud-showers-heavy",desc:"Heavy rainfall expected in 2 days. Consider harvesting early.",time:"2 hours ago"},
+        {icon:"seedling",desc:"Nitrogen top-dressing recommended for maize field 2.",time:"5 hours ago"},
+        {icon:"bell",desc:"Equipment booking confirmed for soil tiller.",time:"6 hours ago"},
+        {icon:"exclamation-circle",desc:"Market price for wheat up by 11% this week.",time:"1 day ago"},
+      ];
+      let html = '';
+      for(let act of activities) html+=`
+        <li class="activity-list__item">
+          <i class="fa fa-${act.icon} activity-icon"></i>
+          <span class="activity-list__desc">${act.desc}</span>
+          <span class="activity-list__time">${act.time}</span>
+        </li>
+      `;
+      document.getElementById("activityList").innerHTML = html;
+    }
+    loadRecentActivity();
+
+    // ------- RENTAL EQUIPMENTS --------
+    // Demo tool data
+    const farmTools = [
+      {
+        name: "Rotavator",
+        desc: "Efficient land preparation for sowing.",
+        image: "https://cdn-icons-png.flaticon.com/512/219/219983.png",
+        price: 550
+      },
+      {
+        name: "Power Weeder",
+        desc: "Manual and automatic weed removal.",
+        image: "https://cdn-icons-png.flaticon.com/512/6401/6401793.png",
+        price: 370
+      },
+      {
+        name: "Soil Tiller",
+        desc: "Deep soil mixing and aeration.",
+        image: "https://cdn-icons-png.flaticon.com/512/2351/2351568.png",
+        price: 480
+      },
+      {
+        name: "Sprayer",
+        desc: "For pesticides and crop spraying.",
+        image: "https://cdn-icons-png.flaticon.com/512/4002/4002661.png",
+        price: 190
+      }
+    ];
+    function renderRentalTools() {
+      let html = `<h2 style="color:var(--green-sidebar); margin-bottom:14px">
+        <i class="fa fa-tractor"></i> Rental Equipments
+      </h2>
+      <div class="tools-grid">`;
+      for(let t of farmTools){
+        html += `<div class="tool-card">
+          <img src="${t.image}" alt="${t.name}">
+          <div class="tool-card__name">${t.name}</div>
+          <div class="tool-card__desc">${t.desc}</div>
+          <div class="tool-card__price">₹${t.price}/day</div>
+          <button class="tool-card__btn" onclick="rentTool('${t.name.replace(/'/g,"")}',${t.price},'${t.image}')">Rent Tool Now</button>
+        </div>`;
+      }
+      html+="</div>";
+      document.getElementById("rentalSection").innerHTML = html;
+    }
+    renderRentalTools();
+
+    window.rentTool = function(toolName, price, img) {
+      let bookings = JSON.parse(localStorage.getItem("myBookings")||"[]");
+      bookings.push({
+        name: toolName, price: price, image: img,
+        date: new Date().toLocaleDateString(),
+        duration: 1, status: "Active"
+      });
+      localStorage.setItem("myBookings",JSON.stringify(bookings));
+      document.getElementById("rentalSection").innerHTML = `
+        <div class="success-alert">Booking Success! <b>${toolName}</b> reserved.</div>`;
+      setTimeout(()=>renderRentalTools(),1300);
+    }
+
+    // ------- MARKET PRICE -------
+    // Demo market price dataset
+    const areaList = ["Chennai","Madurai","Erode","Trichy","Salem"];
+    const cropList = ["Wheat","Rice","Maize","Sugarcane","Cotton"];
+    let marketPriceData = {
+      "Chennai": { "Wheat": 2650, "Rice": 2050, "Maize": 1420, "Sugarcane": 1820, "Cotton": 3500 },
+      "Madurai": { "Wheat": 2580, "Rice": 2090, "Maize": 1380, "Sugarcane": 1790, "Cotton": 3390 },
+      "Erode":   { "Wheat": 2590, "Rice": 2070, "Maize": 1390, "Sugarcane": 1800, "Cotton": 3450 },
+      "Trichy":  { "Wheat": 2635, "Rice": 2060, "Maize": 1405, "Sugarcane": 1810, "Cotton": 3435 },
+      "Salem":   { "Wheat": 2575, "Rice": 2025, "Maize": 1410, "Sugarcane": 1765, "Cotton": 3380 }
+    };
+    const priceTrends = {
+      Wheat:   [2550,2570,2580,2610,2650,2635,2660],
+      Rice:    [2000,2020,2050,2045,2055,2070,2075],
+      Maize:   [1400,1380,1420,1410,1415,1390,1405],
+      Sugarcane:[1700,1790,1820,1800,1810,1765,1825],
+      Cotton:  [3300,3390,3500,3450,3435,3380,3495]
+    };
+    function renderMarketSection() {
+      let html = `<h2 style="color:var(--green-sidebar); margin-bottom:14px">
+        <i class="fa fa-chart-line"></i> Market Prices
+      </h2>
+      <div class="market-header">
+        <select id="areaSelect" class="market-dropdown">
+          ${areaList.map(x=>`<option value="${x}">${x}</option>`).join('')}
+        </select>
+        <select id="cropSelect" class="market-dropdown">
+          ${cropList.map(x=>`<option value="${x}">${x}</option>`).join('')}
+        </select>
+      </div>
+      <table class="market-table">
+        <tr>
+          <th>Crop</th>
+          <th>Current Price (₹/quintal)</th>
+        </tr>
+        ${cropList.map(crop=>{
+          let area = areaList[0], price = marketPriceData[area][crop];
+          return `<tr>
+            <td>${crop}</td><td id="price-${crop}">${price}</td>
+          </tr>`
+        }).join('')}
+      </table>
+      <canvas id="marketChart" height="120"></canvas>
+      <div style="margin-top:10px;color:#1e8754;font-size:.98rem;">
+        Data last updated: <span id="marketUpdateTime"></span>
+      </div>
+      `;
+      document.getElementById("marketSection").innerHTML = html;
+      updateMarketChart(cropList[0]);
+      document.getElementById("marketUpdateTime").textContent =
+        new Date().toLocaleString();
+      document.getElementById("areaSelect").onchange=marketDropdownChange;
+      document.getElementById("cropSelect").onchange=marketDropdownChange;
+    }
+    function marketDropdownChange(){
+      let area = document.getElementById("areaSelect").value;
+      let crop = document.getElementById("cropSelect").value;
+      for(let c of cropList)
+        document.getElementById(`price-${c}`).textContent = marketPriceData[area][c];
+      updateMarketChart(crop);
+    }
+    let marketChart=null;
+    function updateMarketChart(selectedCrop){
+      let ctx=document.getElementById('marketChart').getContext('2d');
+      if(marketChart)marketChart.destroy();
+      marketChart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:['Day1','Day2','Day3','Day4','Day5','Day6','Today'],
+          datasets:[{
+            label:`${selectedCrop} Price (₹/quintal)`,
+            data:priceTrends[selectedCrop],
+            borderColor:'#4db47a',backgroundColor:'#caeafc70',
+            fill:true,tension:0.35
+          }]
+        },
+        options:{
+          responsive:true, plugins:{legend:{display:false}},
+          scales:{y:{beginAtZero:false}}
+        }
+      });
+    }
+    renderMarketSection();
+
+    // --- Refresh Market Prices every 24h (simulated)
+    setInterval(() => { renderMarketSection(); }, 1000*60*60*24);
+
+    // ------- SMART DIVERSIFICATION -------
+    const cropCombos = [
+      {season:"Kharif", combo:"Rice + Green Gram", benefit:"Fertility & yield"},
+      {season:"Rabi", combo:"Wheat + Mustard", benefit:"Balanced income"},
+      {season:"Zaid", combo:"Cucumber + Watermelon", benefit:"Quick profit"}
+    ];
+    function renderDiversificationSection(){
+      let html = `<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-leaf"></i> Smart Diversification
+      </h2>
+      <table class="div-table">
+        <tr><th>Season</th><th>Crop Combo</th><th>Key Benefit</th></tr>
+        ${cropCombos.map(c=>
+          `<tr>
+            <td>${c.season}</td>
+            <td>${c.combo}</td>
+            <td>${c.benefit}</td>
+          </tr>`).join('')}
+      </table>
+      <form class="diversi-form" id="diversiForm">
+        <input type="text" placeholder="Soil Type" id="soilType" required>
+        <select id="seasonInput">
+          <option value="Kharif">Kharif</option>
+          <option value="Rabi">Rabi</option>
+          <option value="Zaid">Zaid</option>
+        </select>
+        <input type="text" placeholder="Harvest Season" id="harvestSeason" required>
+        <button class="diversi-form-btn" type="submit">Get Recommendations</button>
+      </form>
+      <div id="diversiRecoBox"></div>
+      `;
+      document.getElementById("diversificationSection").innerHTML = html;
+      document.getElementById("diversiForm").onsubmit = function(e){
+        e.preventDefault();
+        showCropRecommendations();
+      }
+    }
+    function showCropRecommendations(){
+      let soil = document.getElementById("soilType").value;
+      let season = document.getElementById("seasonInput").value;
+      let harvest = document.getElementById("harvestSeason").value;
+      let recs = [
+        {combo: "Rice + Green Gram", benefit: "High fertility & yield"},
+        {combo: "Wheat + Mustard", benefit: "Balanced profit"},
+        {combo: "Cucumber + Watermelon", benefit: "Quick harvesting"}
+      ];
+      let selRecs = recs.filter((r,ix)=>ix==["Kharif","Rabi","Zaid"].indexOf(season));
+      let html = `<div style="margin-bottom:9px;"><strong>Best Crop Combo(s):</strong></div>`;
+      for(let r of selRecs) {
+        html += `<div class="diversi-rec-box"><b>${r.combo}</b><br><span style="color:#429c60">${r.benefit}</span></div>`;
+      }
+      document.getElementById("diversiRecoBox").innerHTML = html;
+    }
+    renderDiversificationSection();
+
+    // ------- WEATHER UPDATE -------
+    let weatherSectionRefreshTimeout = null;
+    function renderWeatherSection(){
+      let html = `<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-cloud-sun"></i> Weather Update
+      </h2>
+      <form id="weatherSearchForm">
+        <input class="weather-search-input" id="weatherSearchInput" placeholder="Search area...">
+        <button class="weather-search-btn" type="submit">
+          <i class="fa fa-search"></i> Search
+        </button>
+      </form>
+      <div id="weatherDataView"></div>`;
+      document.getElementById("weatherSection").innerHTML = html;
+      document.getElementById("weatherSearchForm").onsubmit = function(e){
+        e.preventDefault();
+        let val = document.getElementById("weatherSearchInput").value;
+        if(val.length) showWeatherFor(val);
+      }
+      // get geolocation
+      if("geolocation" in navigator){
+        navigator.geolocation.getCurrentPosition(pos=>{
+          fetchWeatherByCoords(pos.coords.latitude,pos.coords.longitude);
+        }, ()=>showWeatherFor("Chennai"));
+      } else { showWeatherFor("Chennai"); }
+      startWeatherAutoRefresh();
+    }
+    function showWeatherFor(area){
+      document.getElementById("weatherDataView").innerHTML = `<div class="weather-card">
+        <i class="fa fa-sync fa-spin weather-icon"></i>
+        <div>
+          <b class="weather-info">Loading weather for ${area}...</b>
+        </div>
+      </div>`;
+      getOpenWeather(area, (info) => setWeatherInfo(info, area));
+    }
+    function fetchWeatherByCoords(lat, lon){
+      getOpenWeatherCoords(lat, lon, (info)=>setWeatherInfo(info,"Current Location"));
+    }
+    function setWeatherInfo(info, area){
+      document.getElementById("weatherDataView").innerHTML = `
+        <div class="weather-card">
+          <i class="weather-icon fa fa-${info.icon}"></i>
+          <div>
+            <b class="weather-info">${area}: ${info.temp}°C, ${info.condition}</b>
+            <div class="weather-details">
+              Humidity: ${info.humidity}% | Wind: ${info.wind} m/s
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    function startWeatherAutoRefresh(){
+      if(weatherSectionRefreshTimeout)clearInterval(weatherSectionRefreshTimeout);
+      weatherSectionRefreshTimeout = setInterval(()=>{
+        let lastArea = document.querySelector("#weatherDataView .weather-info");
+        let area = lastArea?(lastArea.textContent.split(":")[0].trim()):"Chennai";
+        showWeatherFor(area);
+      },30000);
+    }
+    // OpenWeatherMap API - Replace YOUR_API_KEY if you want real results
+    const OPEN_WEATHER_KEY = "b3f823ed6aaa90cdbe350f1275aff85d"; // example, always use a public/free key
+    function getOpenWeather(area, cb){
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(area)}&appid=${OPEN_WEATHER_KEY}&units=metric`)
+      .then(x=>x.json()).then(data=>{
+        let icon = 'cloud-sun',c = 'Clear';
+        if(data.weather&&data.weather[0]) {
+          let main = data.weather[0].main;
+          if(main=="Clouds")icon='cloud';if(main=="Rain")icon='cloud-showers-heavy';
+          if(main=="Drizzle")icon='cloud-rain';if(main=="Thunderstorm")icon='bolt';
+          if(main=="Snow")icon='snowflake';if(main=="Mist")icon='smog';
+          c = data.weather[0].description||main;
+        }
+        cb({
+          temp: data.main ? Math.round(data.main.temp) : "-",
+          humidity: data.main ? data.main.humidity : "-",
+          condition: c||"",
+          wind: data.wind ? data.wind.speed : "-",
+          icon: icon
+        })
+      }).catch(()=>cb({
+        temp:"-",humidity:"-",
+        condition:"Not found",wind:"-",icon:"exclamation"
+      }));
+    }
+    function getOpenWeatherCoords(lat, lon, cb){
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_KEY}&units=metric`)
+      .then(x=>x.json()).then(data=>{
+        let icon = 'cloud-sun',c = 'Clear';
+        if(data.weather&&data.weather[0]) {
+          let main = data.weather[0].main;
+          if(main=="Clouds")icon='cloud';if(main=="Rain")icon='cloud-showers-heavy';
+          if(main=="Drizzle")icon='cloud-rain';if(main=="Thunderstorm")icon='bolt';
+          if(main=="Snow")icon='snowflake';if(main=="Mist")icon='smog';
+          c = data.weather[0].description||main;
+        }
+        cb({
+          temp: data.main ? Math.round(data.main.temp) : "-",
+          humidity: data.main ? data.main.humidity : "-",
+          condition: c||"",
+          wind: data.wind ? data.wind.speed : "-",
+          icon: icon
+        })
+      }).catch(()=>cb({
+        temp:"-",humidity:"-",
+        condition:"Not found",wind:"-",icon:"exclamation"
+      }));
+    }
+    renderWeatherSection();
+
+    // ------- MY FIELD -------
+    function renderFieldSection(){
+      let html = `<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-map-marker-alt"></i> My Field
+      </h2>
+      <form class="field-form" id="fieldForm" enctype="multipart/form-data">
+        <input type="file" id="fieldImgInput" accept="image/*">
+        <input type="text" id="fieldAcreSize" placeholder="Acre size" required>
+        <input type="text" id="fieldLocation" placeholder="Location" required>
+        <textarea id="fieldDesc" placeholder="Description" required></textarea>
+        <button class="field-form-btn" type="submit">Save Details</button>
+      </form>
+      <div id="fieldPreview"></div>`;
+      document.getElementById("fieldSection").innerHTML = html;
+      document.getElementById("fieldImgInput").onchange=function(e){
+        let file=e.target.files[0],preview=document.getElementById("fieldPreview");
+        if(file){
+          let reader=new FileReader();
+          reader.onload=function(){ 
+            preview.innerHTML=`<img src="${reader.result}" class="field-preview-img">`; 
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      document.getElementById("fieldForm").onsubmit=function(e){
+        e.preventDefault();
+        let img=document.getElementById("fieldPreview").querySelector("img");
+        let acre=document.getElementById("fieldAcreSize").value;
+        let loc=document.getElementById("fieldLocation").value;
+        let desc=document.getElementById("fieldDesc").value;
+        let fieldInfo={img:img?img.src:"",acre,loc,desc};
+        localStorage.setItem("myField",JSON.stringify(fieldInfo));
+        showFieldDetails();
+      };
+      showFieldDetails();
+    }
+    function showFieldDetails(){
+      let info=JSON.parse(localStorage.getItem("myField")||"null");
+      if(info){
+        document.getElementById("fieldPreview").innerHTML=
+          `<div class="field-info-card">
+            ${info.img?`<img src="${info.img}" class="field-preview-img">`:""}
+            <div>
+              <b>Acre size:</b> ${info.acre}<br>
+              <b>Location:</b> ${info.loc}<br>
+              <b>Description:</b> ${info.desc}
+            </div>
+          </div>`;
+      }
+    }
+    renderFieldSection();
+
+    // ------- MY BOOKINGS -------
+    function renderBookingsSection(){
+      let bookings = JSON.parse(localStorage.getItem("myBookings")||"[]");
+      let html = `<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-book"></i> My Bookings
+      </h2>
+      <div class="booking-list">`;
+      if(bookings.length==0)html+=`No tools booked yet.`;
+      for(let b of bookings){
+        html+=`<div class="booking-card">
+          <img src="${b.image}" alt="${b.name}">
+          <div class="booking-info">
+            <div class="booking-name">${b.name}</div>
+            <div class="booking-date">Booking Date: ${b.date}</div>
+            <div class="booking-duration">Duration: ${b.duration} day(s)</div>
+          </div>
+          <span class="booking-status ${b.status}">${b.status}</span>
+        </div>`;
+      }
+      html += `</div>`;
+      document.getElementById("bookingsSection").innerHTML = html;
+    }
+    renderBookingsSection();
+
+    // ------- NOTIFICATIONS -------
+    function renderNotificationsSection(){
+      const notifs=[
+        {icon:"cloud-showers-heavy",msg:"Heavy rain expected tomorrow.",time:"2h ago"},
+        {icon:"tractor",msg:"Power Weeder booking confirmed.",time:"5h ago"},
+        {icon:"leaf",msg:"Crop suggestion updated for Kharif.",time:"6h ago"},
+        {icon:"bell",msg:"Market price alert for Rice.",time:"1 day ago"}
+      ];
+      let html=`<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-bell"></i> Notifications
+      </h2>
+      <ul class="notification-list">`;
+      for(let n of notifs){
+        html+=`<li class="notification-card">
+          <span class="notification-icon"><i class="fa fa-${n.icon}"></i></span>
+          <span class="notification-msg">${n.msg}</span>
+          <span class="notification-time">${n.time}</span>
+        </li>`;
+      }
+      html+="</ul>";
+      document.getElementById("notificationsSection").innerHTML=html;
+    }
+    renderNotificationsSection();
+
+    // ------- FEEDBACKS -------
+    function renderFeedbacksSection(){
+      let html=`<h2 style="color:var(--green-sidebar);margin-bottom:13px">
+        <i class="fa fa-star"></i> Your Feedbacks
+      </h2>
+      <form class="feedback-form" id="feedbackForm">
+        <input type="text" id="feedbackSubject" placeholder="Subject" required>
+        <textarea id="feedbackText" placeholder="Your feedback..." required></textarea>
+        <select id="starRating" required>
+          <option value="">Stars</option>
+          <option value="1">★☆☆☆☆</option>
+          <option value="2">★★☆☆☆</option>
+          <option value="3">★★★☆☆</option>
+          <option value="4">★★★★☆</option>
+          <option value="5">★★★★★</option>
+        </select>
+        <button class="feedback-form-btn" type="submit">Submit</button>
+      </form>
+      <div id="feedback-success"></div>
+      <div class="feedback-list" id="feedbackList"></div>
+      `;
+      document.getElementById("feedbacksSection").innerHTML=html;
+      document.getElementById("feedbackForm").onsubmit=function(e){
+        e.preventDefault();
+        let subject=document.getElementById("feedbackSubject").value;
+        let text=document.getElementById("feedbackText").value;
+        let star=document.getElementById("starRating").value;
+        let feedbacks=JSON.parse(localStorage.getItem("myFeedbacks")||"[]");
+        feedbacks.push({
+          subject,text,star,dt:new Date().toLocaleString()
+        });
+        localStorage.setItem("myFeedbacks",JSON.stringify(feedbacks));
+        document.getElementById('feedback-success').innerHTML=`<div class="success-alert">
+          Feedback submitted successfully!
+        </div>`;
+        showFeedbacks();
+        setTimeout(()=>{ document.getElementById('feedback-success').innerHTML=""; },1300);
+        document.getElementById("feedbackForm").reset();
+      };
+      showFeedbacks();
+    }
+    function showFeedbacks(){
+      let feedbacks=JSON.parse(localStorage.getItem("myFeedbacks")||"[]");
+      let html="";
+      for(let fb of feedbacks.reverse()){
+        html+=`<div class="feedback-card">
+          <span class="feedback-rating">${"★".repeat(+fb.star)}${"☆".repeat(5-fb.star)}</span>
+          <div class="feedback-main">
+            <b>${fb.subject}</b><br>
+            <span>${fb.text}</span><br>
+            <span style="color:#377a5d;font-size:.93em">${fb.dt}</span>
+          </div>
+        </div>`;
+      }
+      document.getElementById("feedbackList").innerHTML=html;
+    }
+    renderFeedbacksSection();
+
+    // --- Dynamic section switching via sidebar links
+    function loadSectionsOnSwitch(){
+      document.querySelector(`.sidebar__item[data-page='dashboard']`).onclick=()=>switchSection('dashboard');
+      document.querySelector(`.sidebar__item[data-page='rental']`).onclick=()=>{
+        switchSection('rental');
+        renderRentalTools();
+      }
+      document.querySelector(`.sidebar__item[data-page='market']`).onclick=()=>{
+        switchSection('market');
+        renderMarketSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='diversification']`).onclick=()=>{
+        switchSection('diversification');
+        renderDiversificationSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='weather']`).onclick=()=>{
+        switchSection('weather');
+        renderWeatherSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='field']`).onclick=()=>{
+        switchSection('field');
+        renderFieldSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='bookings']`).onclick=()=>{
+        switchSection('bookings');
+        renderBookingsSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='notifications']`).onclick=()=>{
+        switchSection('notifications');
+        renderNotificationsSection();
+      }
+      document.querySelector(`.sidebar__item[data-page='feedbacks']`).onclick=()=>{
+        switchSection('feedbacks');
+        renderFeedbacksSection();
+      }
+    }
+    loadSectionsOnSwitch();
+
+    // Collapse sidebar on mobile
+    window.addEventListener('resize',()=>{
+      if(window.innerWidth<760)document.getElementById("sidebar").classList.add("collapsed");
+      else document.getElementById("sidebar").classList.remove("collapsed");
+    })
+  </script>
+</body>
+</html>
