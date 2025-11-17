@@ -1,0 +1,2 @@
+# krushiSathi
+mini project 
